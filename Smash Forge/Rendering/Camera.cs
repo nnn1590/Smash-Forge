@@ -28,6 +28,7 @@ namespace Smash_Forge
         private Matrix4 rotation = Matrix4.Identity;
         private Matrix4 translation = Matrix4.Identity;
         private Matrix4 perspFov = Matrix4.Identity;
+        private Matrix4 tileMatrix = Matrix4.Identity;
 
         private float zoomMultiplier = Runtime.zoomModifierScale; 
         private float zoomSpeed = Runtime.zoomspeed;
@@ -52,6 +53,12 @@ namespace Smash_Forge
             this.renderWidth = renderWidth;
             cameraXRotation = rotX;
             cameraYRotation = rotY;
+        }
+
+        public void setTileMatrix(float scaleX, float scaleY, float offsetX, float offsetY)
+        {
+            tileMatrix = Matrix4.CreateScale(scaleX, scaleY, 1) *
+                Matrix4.CreateTranslation(offsetX, offsetY, 0);
         }
 
         public Matrix4 getModelViewMatrix()
@@ -190,7 +197,7 @@ namespace Smash_Forge
             perspFov = Matrix4.CreatePerspectiveFieldOfView(fov, renderWidth / (float)renderHeight, 1.0f, RenderDepth);
 
             modelViewMatrix = rotation * translation;
-            mvpMatrix = modelViewMatrix * perspFov;
+            mvpMatrix = modelViewMatrix * perspFov * tileMatrix;
             billboardMatrix = translation * perspFov;
             billboardYMatrix = Matrix4.CreateRotationX(cameraXRotation) * translation * perspFov;
         }

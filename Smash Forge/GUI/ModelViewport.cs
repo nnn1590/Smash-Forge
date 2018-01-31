@@ -706,7 +706,30 @@ namespace Smash_Forge
 
         private void RenderButton_Click(object sender, EventArgs e)
         {
-            CaptureScreen(true).Save(MainForm.executableDir + "\\Render.png");
+            // Tile the image into m x n tiles. 
+            int m = 2;
+            int n = 2;
+            // Strange indices to provide an extra border to prevent image from being cut off.
+            for (int x = -1; x < m + 1; x++)
+            {
+                for (int y = -1; y < n + 1; y++)
+                {
+                    //System.Threading.Thread.Sleep(100);
+                    float offsetX = -(-1 + ((float) 2 / (2 * m)) + (((float) 2 / m) * x));
+                    float offsetY = -(-1 + ((float) 2 / (2 * n)) + (((float) 2 / n) * y));
+                    camera.setTileMatrix(m, n, offsetX, offsetY);
+                    // Force the viewport to refresh. 
+                    Render(null, null);
+                    CaptureScreen(true).Save(MainForm.executableDir + "\\Render" + x + "" + y + ".png");
+                }
+
+            }
+            //System.Threading.Thread.Sleep(750);
+            // Rest the matrix transformations.
+            camera.setTileMatrix(1, 1, 0, 0);
+            Render(null, null);
+
+
         }
 
         public Bitmap CaptureScreen(bool saveAlpha)
