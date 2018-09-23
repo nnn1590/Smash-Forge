@@ -120,7 +120,7 @@ namespace Smash_Forge
                     int SampIndex = 0;
                     foreach (var smp in mat.SamplerDict)
                     {
-                        poly.material.Samplers.Add(smp.Key, SampIndex);
+                        poly.material.Samplers.Add(smp.ToString(), SampIndex);
                         SampIndex++;
                     }
 
@@ -134,7 +134,7 @@ namespace Smash_Forge
                         int o = 0;
                         foreach (var op in mat.ShaderAssign.ShaderOptionDict)
                         {
-                            shaderassign.options.Add(op.Key, mat.ShaderAssign.ShaderOptions[o]);
+                            shaderassign.options.Add(op.ToString(), mat.ShaderAssign.ShaderOptions[o]);
                             o++;
                         }
                         int sa = 0;
@@ -142,14 +142,14 @@ namespace Smash_Forge
                         {
                             //       Console.WriteLine($"{smp.Key} ---> {mat.ShaderAssign.SamplerAssigns[sa]}");
                             if (!shaderassign.samplers.ContainsKey(mat.ShaderAssign.SamplerAssigns[sa]))
-                                shaderassign.samplers.Add(mat.ShaderAssign.SamplerAssigns[sa], smp.Key);
+                                shaderassign.samplers.Add(mat.ShaderAssign.SamplerAssigns[sa], smp.ToString());
                             sa++;
                         }
 
                         int va = 0;
                         foreach (var att in mat.ShaderAssign.AttribAssignDict)
                         {
-                            shaderassign.attributes.Add(att.Key, mat.ShaderAssign.AttribAssigns[va]);
+                            shaderassign.attributes.Add(att.ToString(), mat.ShaderAssign.AttribAssigns[va]);
                             va++;
                         }
 
@@ -185,6 +185,9 @@ namespace Smash_Forge
         }
         private void ReadSkeleton(FMDL_Model model, Model mdl)
         {
+            if (mdl.Skeleton.MatrixToBoneList == null)
+                mdl.Skeleton.MatrixToBoneList = new List<ushort>();
+
             model.Node_Array = new int[mdl.Skeleton.MatrixToBoneList.Count];
             int nodes = 0;
             foreach (ushort node in mdl.Skeleton.MatrixToBoneList)
@@ -365,7 +368,7 @@ namespace Smash_Forge
                 texture.wrapModeS = (int)mat.Samplers[id].WrapModeU;
                 texture.wrapModeT = (int)mat.Samplers[id].WrapModeV;
                 texture.wrapModeW = (int)mat.Samplers[id].WrapModeW;
-                texture.SamplerName = mat.SamplerDict.Keys.ElementAt(id);
+                texture.SamplerName = mat.SamplerDict.GetKey(id);
                 texture.Name = TextureName;
 
 
