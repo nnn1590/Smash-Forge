@@ -902,8 +902,8 @@ namespace Smash_Forge
 
             // TODO: These aren't controlled by the Texture class yet.
             GL.TexParameter(TextureTarget.Texture2D, (TextureParameterName)ExtTextureFilterAnisotropic.TextureMaxAnisotropyExt, 0.0f);
-            if (matTexture.mipDetail == 0x4 || matTexture.mipDetail == 0x6)
-                GL.TexParameter(TextureTarget.Texture2D, (TextureParameterName)ExtTextureFilterAnisotropic.TextureMaxAnisotropyExt, 4.0f);
+     //       if (matTexture.mipDetail == 0x4 || matTexture.mipDetail == 0x6)
+     //           GL.TexParameter(TextureTarget.Texture2D, (TextureParameterName)ExtTextureFilterAnisotropic.TextureMaxAnisotropyExt, 4.0f);
         }
 
 
@@ -1121,6 +1121,10 @@ namespace Smash_Forge
 
         public class Mesh : TreeNode
         {
+            //Setup targets. These are useful
+            public ResFile TargetWiiUBfres;
+            public ResFile TargetSwitchBfres;
+
             public List<Vertex> vertices = new List<Vertex>();
             public List<int> texHashs = new List<int>();
             public string name;
@@ -1667,34 +1671,101 @@ namespace Smash_Forge
 
             public MaterialFlags IsVisable = MaterialFlags.Visible;
 
-            public Material Clone()
+            //Switch Binary fomart
+            //I create a new switch material class and set all the data from here
+            //then i export it. 
+            public void ExportSwitchMaterial()
             {
-                Material m = new Material();
-
-                m.Flags = IsVisable;
+                ResNSW.Material m = new ResNSW.Material();
+                m.Flags = (ResNSW.MaterialFlags)IsVisable;
                 m.Name = Name;
-                m.TextureRefs = new List<TextureRef>();
-                m.RenderInfos = new ResDict<RenderInfo>();
-                m.Samplers = new ResDict<Sampler>();
-                //      m.ShaderAssign = new ShaderAssign();
-                m.ShaderParamData = new byte[0];
-                m.ShaderParams = new ResDict<Syroot.NintenTools.Bfres.ShaderParam>();
-                m.UserData = new ResDict<UserData>();
+                m.TextureRefs = new List<ResNSW.TextureRef>();
+                m.RenderInfos = new List<ResNSW.RenderInfo>();
+                m.Samplers = new List<ResNSW.Sampler>();
                 m.VolatileFlags = new byte[0];
-
+                m.UserDatas = new List<ResNSW.UserData>();
 
                 foreach (MatTexture tex in textures)
                 {
-                    TextureRef texture = new TextureRef();
+                    ResNSW.TextureRef texture = new ResNSW.TextureRef();
                     texture.Name = tex.Name;
-                    texture.Texture = new Syroot.NintenTools.Bfres.Texture();
-
                     m.TextureRefs.Add(texture);
+
+                    ResNSW.Sampler samp = new ResNSW.Sampler();
+                    samp.BorderColorType = tex.BorderColorType;
+                    samp.CompareFunc = tex.CompareFunc;
+                    samp.FilterMode = tex.FilterMode;
+                    samp.LODBias = tex.LODBias;
+                    samp.MaxAnisotropic = tex.MaxAnisotropic;
+                    samp.MaxLOD = tex.magFilter;
+                    samp.MinLOD = tex.minFilter;
+                    samp.WrapModeU = (ResNSW.GFX.TexClamp)tex.wrapModeS;
+                    samp.WrapModeV = (ResNSW.GFX.TexClamp)tex.wrapModeT;
+                    samp.WrapModeW = (ResNSW.GFX.TexClamp)tex.wrapModeW;
+
+                    m.Samplers.Add(samp);
+
+                    m.SamplerDict.Add(tex.SamplerName);
+                }
+                foreach (RenderInfoData rnd in renderinfo)
+                {
+                    ResNSW.RenderInfo renderInfo = new ResNSW.RenderInfo();
+                    renderInfo.Name = rnd.Name;
+                    if (rnd.Type == RenderInfoType.Int32)
+                        renderInfo._value = rnd.Value_Int;
+                    if (rnd.Type == RenderInfoType.Single)
+                        renderInfo._value = rnd.Value_Float;
+                    if (rnd.Type == RenderInfoType.String)
+                        renderInfo._value = rnd.Value_String;
+
+                    m.RenderInfos.Add(renderInfo);
                 }
 
-                return m;
-            }
+                ResNSW.ShaderAssign shaderAssign = new ResNSW.ShaderAssign();
+                shaderAssign.ShaderArchiveName = shaderassign.ShaderArchive;
+                shaderAssign.ShadingModelName = shaderassign.ShaderModel;
 
+                foreach (var op in shaderassign.options)
+                {
+                    shaderAssign.ShaderOptionDict.Add(op.Key);
+                    shaderAssign.ShaderOptions.Add(op.Value);
+                }
+                foreach (var att in shaderassign.attributes)
+                {
+                    shaderAssign.AttribAssignDict.Add(att.Key);
+                    shaderAssign.AttribAssigns.Add(att.Value);
+                }
+                foreach (var smp in shaderassign.samplers)
+                {
+                    shaderAssign.SamplerAssignDict.Add(smp.Key);
+                    shaderAssign.SamplerAssigns.Add(smp.Value);
+                }
+
+                foreach (RenderInfoData rnd in renderinfo)
+                {
+                    ResNSW.RenderInfo renderInfo = new ResNSW.RenderInfo();
+                    renderInfo.Name = rnd.Name;
+                    if (rnd.Type == RenderInfoType.Int32)
+                        renderInfo._value = rnd.Value_Int;
+                    if (rnd.Type == RenderInfoType.Single)
+                        renderInfo._value = rnd.Value_Float;
+                    if (rnd.Type == RenderInfoType.String)
+                        renderInfo._value = rnd.Value_String;
+
+                    m.RenderInfos.Add(renderInfo);
+                }
+
+                SaveFileDialog sfd = new SaveFileDialog();
+                sfd.Filter = "Supported Formats|*.bfmat;|" +
+                             "All files(*.*)|*.*";
+
+                sfd.FileName = Name;
+                sfd.DefaultExt = "bfmat";
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    m.Export(sfd.FileName, null); //Todo i need to grab the resfile instance for later version comparing
+                }
+            }
         }
 
         public class MatTexture
@@ -1706,7 +1777,10 @@ namespace Smash_Forge
             public int wrapModeW = 1; //Used for 3D textures
             public int minFilter = 3;
             public int magFilter = 2;
-            public int mipDetail = 6;
+            public short FilterMode = 0;
+            public float LODBias = 0;
+            public int MaxAnisotropic = 7;
+
             public string Name;
             public string SamplerName;
             //Note samplers will get converted to another sampler type sometimes in the shader assign section
@@ -1716,6 +1790,9 @@ namespace Smash_Forge
 
 
             public TextureType Type;
+            public ResNSW.GFX.TexBorderType BorderColorType;
+            public ResNSW.GFX.CompareFunction CompareFunc;
+
 
             //An enum for the assumed texture type by sampler
             //Many games have a consistant type of samplers and type. _a0 for diffuse, _n0 for normal, ect
@@ -1757,7 +1834,6 @@ namespace Smash_Forge
                 t.wrapModeT = wrapModeT;
                 t.minFilter = minFilter;
                 t.magFilter = magFilter;
-                t.mipDetail = mipDetail;
                 return t;
             }
 
