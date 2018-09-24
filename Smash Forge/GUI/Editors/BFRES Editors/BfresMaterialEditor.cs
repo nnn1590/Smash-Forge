@@ -73,12 +73,29 @@ namespace Smash_Forge
         {
             foreach (var rnd in mat.renderinfo)
             {
+                string value = "";
+
                 if (rnd.Type == RenderInfoType.Int32)
-                    dataGridView4.Rows.Add(rnd.Name, rnd.Value_Int.ToString(), "Int");
+                {
+                    foreach (int item in rnd.Value_Ints)
+                        value += $" {item}";
+
+                    dataGridView4.Rows.Add(rnd.Name, value, "Int");
+                }
                 if (rnd.Type == RenderInfoType.Single)
-                    dataGridView4.Rows.Add(rnd.Name, rnd.Value_Float.ToString(), "Float");
+                {
+                    foreach (float item in rnd.Value_Floats)
+                        value += $" {item}";
+
+                    dataGridView4.Rows.Add(rnd.Name, value, "Float");
+                }
                 if (rnd.Type == RenderInfoType.String)
-                    dataGridView4.Rows.Add(rnd.Name, rnd.Value_String.ToString(), "String");
+                {
+                    foreach (string item in rnd.Value_Strings)
+                        value += $" {item}";
+
+                    dataGridView4.Rows.Add(rnd.Name, value, "String");
+                }
             }
         }
         private void InitializeShaderOptionList(BFRES.MaterialData mat)

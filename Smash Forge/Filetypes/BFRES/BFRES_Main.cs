@@ -768,21 +768,24 @@ namespace Smash_Forge
             switch (r.Name)
             {
                 case "gsys_render_state_display_face":
-                    if (r.Value_String == "front")
+                    foreach (string value in r.Value_Strings)
                     {
-                        GL.CullFace(CullFaceMode.Back);
-                    }
-                    else if (r.Value_String == "back")
-                    {
-                        GL.CullFace(CullFaceMode.Front);
-                    }
-                    else if (r.Value_String == "both")
-                    {
-                        GL.Disable(EnableCap.CullFace);
-                    }
-                    else if (r.Value_String == "none")
-                    {
-                        GL.CullFace(CullFaceMode.FrontAndBack);
+                        if (value == "front")
+                        {
+                            GL.CullFace(CullFaceMode.Back);
+                        }
+                        else if (value == "back")
+                        {
+                            GL.CullFace(CullFaceMode.Front);
+                        }
+                        else if (value == "both")
+                        {
+                            GL.Disable(EnableCap.CullFace);
+                        }
+                        else if (value == "none")
+                        {
+                            GL.CullFace(CullFaceMode.FrontAndBack);
+                        }
                     }
                     break;
             }
@@ -1121,10 +1124,6 @@ namespace Smash_Forge
 
         public class Mesh : TreeNode
         {
-            //Setup targets. These are useful
-            public ResFile TargetWiiUBfres;
-            public ResFile TargetSwitchBfres;
-
             public List<Vertex> vertices = new List<Vertex>();
             public List<int> texHashs = new List<int>();
             public string name;
@@ -1712,11 +1711,11 @@ namespace Smash_Forge
                     ResNSW.RenderInfo renderInfo = new ResNSW.RenderInfo();
                     renderInfo.Name = rnd.Name;
                     if (rnd.Type == RenderInfoType.Int32)
-                        renderInfo._value = rnd.Value_Int;
+                        renderInfo._value = rnd.Value_Ints;
                     if (rnd.Type == RenderInfoType.Single)
-                        renderInfo._value = rnd.Value_Float;
+                        renderInfo._value = rnd.Value_Floats;
                     if (rnd.Type == RenderInfoType.String)
-                        renderInfo._value = rnd.Value_String;
+                        renderInfo._value = rnd.Value_Strings;
 
                     m.RenderInfos.Add(renderInfo);
                 }
@@ -1741,20 +1740,6 @@ namespace Smash_Forge
                     shaderAssign.SamplerAssigns.Add(smp.Value);
                 }
 
-                foreach (RenderInfoData rnd in renderinfo)
-                {
-                    ResNSW.RenderInfo renderInfo = new ResNSW.RenderInfo();
-                    renderInfo.Name = rnd.Name;
-                    if (rnd.Type == RenderInfoType.Int32)
-                        renderInfo._value = rnd.Value_Int;
-                    if (rnd.Type == RenderInfoType.Single)
-                        renderInfo._value = rnd.Value_Float;
-                    if (rnd.Type == RenderInfoType.String)
-                        renderInfo._value = rnd.Value_String;
-
-                    m.RenderInfos.Add(renderInfo);
-                }
-
                 SaveFileDialog sfd = new SaveFileDialog();
                 sfd.Filter = "Supported Formats|*.bfmat;|" +
                              "All files(*.*)|*.*";
@@ -1764,6 +1749,58 @@ namespace Smash_Forge
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
                     m.Export(sfd.FileName, null); //Todo i need to grab the resfile instance for later version comparing
+                }
+            }
+            public void ImportSwitchMaterial()
+            {
+                OpenFileDialog ofd = new OpenFileDialog();
+                ofd.Filter = "Supported Formats|*.bfmat;|" +
+                             "All files(*.*)|*.*";
+
+                ofd.FileName = Name;
+                ofd.DefaultExt = "bfmat";
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    ResNSW.Material m = new ResNSW.Material();
+
+                    m.Import(ofd.FileName); //set the material data from file
+
+                    //Now use that to setup the new values
+                    IsVisable = (MaterialFlags)m.Flags;
+                    Name = m.Name;
+
+                    int CurTex = 0;
+                    foreach (ResNSW.TextureRef texture in m.TextureRefs)
+                    {
+                        MatTexture tex = new MatTexture();
+                        texture.Name = texture.Name;
+                        textures.Add(tex);
+
+                        tex.BorderColorType = m.Samplers[CurTex].BorderColorType;
+                        tex.CompareFunc = m.Samplers[CurTex].CompareFunc;
+                        tex.FilterMode = m.Samplers[CurTex].FilterMode;
+                        tex.LODBias = m.Samplers[CurTex].LODBias;
+                        tex.MaxAnisotropic = m.Samplers[CurTex].MaxAnisotropic;
+                        tex.magFilter = (int)m.Samplers[CurTex].MaxLOD;
+                        tex.minFilter = (int)m.Samplers[CurTex].MinLOD;
+                        tex.wrapModeS = (int)m.Samplers[CurTex].WrapModeU;
+                        tex.wrapModeT = (int)m.Samplers[CurTex].WrapModeV;
+                        tex.wrapModeW = (int)m.Samplers[CurTex].WrapModeW;
+                        tex.SamplerName = m.SamplerDict.GetKey(CurTex);
+                        CurTex++;
+                    }
+                    foreach (ResNSW.RenderInfo renderinfo in m.RenderInfos)
+                    {
+                        RenderInfoData rnd = new RenderInfoData();
+                        rnd.Name = renderinfo.Name;
+
+                        if (renderinfo.Type == ResNSW.RenderInfoType.Int32)
+                            rnd.Value_Ints = renderinfo.GetValueInt32s();
+                        if (renderinfo.Type == ResNSW.RenderInfoType.Single)
+                            rnd.Value_Floats = renderinfo.GetValueSingles();
+                        if (renderinfo.Type == ResNSW.RenderInfoType.String)
+                            rnd.Value_Strings = renderinfo.GetValueStrings();
+                    }
                 }
             }
         }
@@ -1890,9 +1927,9 @@ namespace Smash_Forge
 
             //Data Section by "Type"
 
-            public int Value_Int;
-            public string Value_String;
-            public float Value_Float;
+            public int[] Value_Ints;
+            public string[] Value_Strings;
+            public float[] Value_Floats;
 
         }
         public class SamplerInfo

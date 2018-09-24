@@ -503,22 +503,13 @@ namespace Smash_Forge
                 switch (rnd.Type)
                 {
                     case RenderInfoType.Int32:
-                        foreach (int rn in rnd.GetValueInt32s())
-                        {
-                            r.Value_Int = rn;
-                        }
+                        r.Value_Ints = rnd.GetValueInt32s();
                         break;
                     case RenderInfoType.Single:
-                        foreach (float rn in rnd.GetValueSingles())
-                        {
-                            r.Value_Float = rn;
-                        }
+                        r.Value_Floats = rnd.GetValueSingles();
                         break;
                     case RenderInfoType.String:
-                        foreach (string rn in rnd.GetValueStrings())
-                        {
-                            r.Value_String = rn;
-                        }
+                        r.Value_Strings = rnd.GetValueStrings();
                         break;
                 }
 
@@ -531,140 +522,173 @@ namespace Smash_Forge
 
         private void SetRenderMode(MaterialData mat, RenderInfoData r, Mesh m)
         {
-            switch (r.Name)
+            if (r.Type == Syroot.NintenTools.Bfres.RenderInfoType.Int32)
             {
-                case "gsys_render_state_mode":
-                    if (r.Value_String == "transparent")
+                foreach (int value in r.Value_Ints)
+                {
+                    switch (r.Name)
                     {
-                        m.isTransparent = true;
+                        case "mode":
+                            if (value == 1)
+                            {
+                            }
+                            if (value == 2)
+                            {
+                                m.isTransparent = true;
+                            }
+                            break;
                     }
-                    if (r.Value_String == "alpha")
-                    {
-                        m.isTransparent = true;
-                    }
-                    if (r.Value_String == "mask")
-                    {
-                        m.isTransparent = true;
-                    }
-                    break;
-                case "mode":
-                    if (r.Value_Int == 1)
-                    {
-                    }
-                    if (r.Value_Int == 2)
-                    {
-                        m.isTransparent = true;
-                    }
-                    break;
+                }
             }
+            if (r.Type == Syroot.NintenTools.Bfres.RenderInfoType.String)
+            {
+                foreach (string value in r.Value_Strings)
+                {
+                    switch (r.Name)
+                    {
+                        case "gsys_render_state_mode":
+                            if (value == "transparent")
+                            {
+                                m.isTransparent = true;
+                            }
+                            if (value == "alpha")
+                            {
+                                m.isTransparent = true;
+                            }
+                            if (value == "mask")
+                            {
+                                m.isTransparent = true;
+                            }
+                            break;
+                    }
+                }
+            }         
         }
 
         private void SetAlphaBlending(MaterialData mat, RenderInfoData r)
         {
-            switch (r.Name)
+            if (r.Type == Syroot.NintenTools.Bfres.RenderInfoType.String)
             {
-                case "gsys_color_blend_rgb_src_func":
-                    if (r.Value_String == "src_alpha")
+                foreach (string value in r.Value_Strings)
+                {
+                    switch (r.Name)
                     {
-                        mat.srcFactor = 1;
-                    }
-                    break;
-                case "gsys_color_blend_rgb_dst_func":
-                    if (r.Value_String == "one_minus_src_alpha")
-                    {
-                        mat.dstFactor = 1;
-                    }
-                    break;
-                case "gsys_color_blend_rgb_op":
-                    if (r.Value_String == "add")
-                    {
+                        case "gsys_color_blend_rgb_src_func":
+                            if (value == "src_alpha")
+                            {
+                                mat.srcFactor = 1;
+                            }
+                            break;
+                        case "gsys_color_blend_rgb_dst_func":
+                            if (value == "one_minus_src_alpha")
+                            {
+                                mat.dstFactor = 1;
+                            }
+                            break;
+                        case "gsys_color_blend_rgb_op":
+                            if (value == "add")
+                            {
 
-                    }
-                    break;
-                case "gsys_color_blend_alpha_op":
-                    if (r.Value_String == "add")
-                    {
-                    }
-                    break;
-                case "gsys_color_blend_alpha_src_func":
-                    if (r.Value_String == "one")
-                    {
+                            }
+                            break;
+                        case "gsys_color_blend_alpha_op":
+                            if (value == "add")
+                            {
+                            }
+                            break;
+                        case "gsys_color_blend_alpha_src_func":
+                            if (value == "one")
+                            {
 
+                            }
+                            break;
+                        case "gsys_color_blend_alpha_dst_func":
+                            if (value == "zero")
+                            {
+                            }
+                            break;
+                        case "gsys_alpha_test_func":
+                            break;
+                        case "gsys_alpha_test_value":
+                            break;
+                        case "sourceColorBlendFactor":
+                            if (value == "sourceAlpha")
+                            {
+                                mat.srcFactor = 1;
+                            }
+                            break;
+                        default:
+                            break;
                     }
-                    break;
-                case "gsys_color_blend_alpha_dst_func":
-                    if (r.Value_String == "zero")
-                    {
-                    }
-                    break;
-                case "gsys_alpha_test_func":
-                    break;
-                case "gsys_alpha_test_value":
-                    break;
-                case "sourceColorBlendFactor":
-                    if (r.Value_String == "sourceAlpha")
-                    {
-                        mat.srcFactor = 1;
-                    }
-                    break;
-                default:
-                    break;
-            }
+                }
+            }  
         }
         private static void SetAlphaTesting(MaterialData mat, RenderInfoData r)
         {
-            switch (r.Name)
+            if (r.Type == Syroot.NintenTools.Bfres.RenderInfoType.String)
             {
-                case "gsys_alpha_test_enable":
-                    if (r.Value_String == "true")
+                foreach (string value in r.Value_Strings)
+                {
+                    switch (r.Name)
                     {
+                        case "gsys_alpha_test_enable":
+                            if (value == "true")
+                            {
 
-                    }
-                    else
-                    {
+                            }
+                            else
+                            {
 
-                    }
-                    break;
-                case "gsys_alpha_test_func":
-                    if (r.Value_String == "lequal")
-                    {
+                            }
+                            break;
+                        case "gsys_alpha_test_func":
+                            if (value == "lequal")
+                            {
 
-                    }
-                    else if (r.Value_String == "gequal")
-                    {
+                            }
+                            else if (value == "gequal")
+                            {
 
+                            }
+                            break;
+                        case "gsys_alpha_test_value":
+                            break;
+                        default:
+                            break;
                     }
-                    break;
-                case "gsys_alpha_test_value":
-                    break;
-                default:
-                    break;
-            }
+                }
+            }    
         }
         private static void SetDepthTesting(MaterialData mat, RenderInfoData r)
         {
-            switch (r.Name)
+            if (r.Type == Syroot.NintenTools.Bfres.RenderInfoType.String)
             {
-                case "gsys_depth_test_enable":
-                    if (r.Value_String == "true")
+                foreach (string value in r.Value_Strings)
+                {
+                    switch (r.Name)
                     {
+                        case "gsys_depth_test_enable":
+                            if (value == "true")
+                            {
 
-                    }
-                    else
-                    {
+                            }
+                            else
+                            {
 
-                    }
-                    break;
-                case "gsys_depth_test_func":
-                    if (r.Value_String == "lequal")
-                    {
+                            }
+                            break;
+                        case "gsys_depth_test_func":
+                            if (value == "lequal")
+                            {
 
+                            }
+                            break;
+                        case "gsys_depth_test_write":
+                            break;
+                        default:
+                            break;
                     }
-                    break;
-                case "gsys_depth_test_write":
-                    break;
-                default:
-                    break;
+                }
             }
         }
 
