@@ -198,11 +198,10 @@ namespace Smash_Forge
             using (var sfd = new SaveFileDialog())
             {
                 BRTI tex = (BRTI)(textureListBox.SelectedItem);
-                sfd.Filter = "Direct Draw Surface (.png)|*.png|" +
+                sfd.Filter = "Portable Network Graphics (.png)|*.png|" +
                                 "All files(*.*)|*.*";
 
                 sfd.FileName = tex.Text;
-
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
                     // use png instead
