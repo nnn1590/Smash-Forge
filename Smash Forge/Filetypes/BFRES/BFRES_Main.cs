@@ -1627,9 +1627,9 @@ namespace Smash_Forge
             public List<SamplerInfo> samplerinfo = new List<SamplerInfo>();
             public Dictionary<string, ShaderParam> matparam = new Dictionary<string, ShaderParam>();
 
-            public ShaderAssign shaderassign;
+            public ShaderAssignData shaderassign;
 
-            public class ShaderAssign
+            public class ShaderAssignData
             {
                 public string ShaderModel = "";
                 public string ShaderArchive = "";
@@ -1668,141 +1668,7 @@ namespace Smash_Forge
             public bool HasRoughnessMap = false;
             public bool HasMRA = false;
 
-            public MaterialFlags IsVisable = MaterialFlags.Visible;
-
-            //Switch Binary fomart
-            //I create a new switch material class and set all the data from here
-            //then i export it. 
-            public void ExportSwitchMaterial()
-            {
-                ResNSW.Material m = new ResNSW.Material();
-                m.Flags = (ResNSW.MaterialFlags)IsVisable;
-                m.Name = Name;
-                m.TextureRefs = new List<ResNSW.TextureRef>();
-                m.RenderInfos = new List<ResNSW.RenderInfo>();
-                m.Samplers = new List<ResNSW.Sampler>();
-                m.VolatileFlags = new byte[0];
-                m.UserDatas = new List<ResNSW.UserData>();
-
-                foreach (MatTexture tex in textures)
-                {
-                    ResNSW.TextureRef texture = new ResNSW.TextureRef();
-                    texture.Name = tex.Name;
-                    m.TextureRefs.Add(texture);
-
-                    ResNSW.Sampler samp = new ResNSW.Sampler();
-                    samp.BorderColorType = tex.BorderColorType;
-                    samp.CompareFunc = tex.CompareFunc;
-                    samp.FilterMode = tex.FilterMode;
-                    samp.LODBias = tex.LODBias;
-                    samp.MaxAnisotropic = tex.MaxAnisotropic;
-                    samp.MaxLOD = tex.magFilter;
-                    samp.MinLOD = tex.minFilter;
-                    samp.WrapModeU = (ResNSW.GFX.TexClamp)tex.wrapModeS;
-                    samp.WrapModeV = (ResNSW.GFX.TexClamp)tex.wrapModeT;
-                    samp.WrapModeW = (ResNSW.GFX.TexClamp)tex.wrapModeW;
-
-                    m.Samplers.Add(samp);
-
-                    m.SamplerDict.Add(tex.SamplerName);
-                }
-                foreach (RenderInfoData rnd in renderinfo)
-                {
-                    ResNSW.RenderInfo renderInfo = new ResNSW.RenderInfo();
-                    renderInfo.Name = rnd.Name;
-                    if (rnd.Type == RenderInfoType.Int32)
-                        renderInfo._value = rnd.Value_Ints;
-                    if (rnd.Type == RenderInfoType.Single)
-                        renderInfo._value = rnd.Value_Floats;
-                    if (rnd.Type == RenderInfoType.String)
-                        renderInfo._value = rnd.Value_Strings;
-
-                    m.RenderInfos.Add(renderInfo);
-                }
-
-                ResNSW.ShaderAssign shaderAssign = new ResNSW.ShaderAssign();
-                shaderAssign.ShaderArchiveName = shaderassign.ShaderArchive;
-                shaderAssign.ShadingModelName = shaderassign.ShaderModel;
-
-                foreach (var op in shaderassign.options)
-                {
-                    shaderAssign.ShaderOptionDict.Add(op.Key);
-                    shaderAssign.ShaderOptions.Add(op.Value);
-                }
-                foreach (var att in shaderassign.attributes)
-                {
-                    shaderAssign.AttribAssignDict.Add(att.Key);
-                    shaderAssign.AttribAssigns.Add(att.Value);
-                }
-                foreach (var smp in shaderassign.samplers)
-                {
-                    shaderAssign.SamplerAssignDict.Add(smp.Key);
-                    shaderAssign.SamplerAssigns.Add(smp.Value);
-                }
-
-                SaveFileDialog sfd = new SaveFileDialog();
-                sfd.Filter = "Supported Formats|*.bfmat;|" +
-                             "All files(*.*)|*.*";
-
-                sfd.FileName = Name;
-                sfd.DefaultExt = "bfmat";
-                if (sfd.ShowDialog() == DialogResult.OK)
-                {
-                    m.Export(sfd.FileName, null); //Todo i need to grab the resfile instance for later version comparing
-                }
-            }
-            public void ImportSwitchMaterial()
-            {
-                OpenFileDialog ofd = new OpenFileDialog();
-                ofd.Filter = "Supported Formats|*.bfmat;|" +
-                             "All files(*.*)|*.*";
-
-                ofd.FileName = Name;
-                ofd.DefaultExt = "bfmat";
-                if (ofd.ShowDialog() == DialogResult.OK)
-                {
-                    ResNSW.Material m = new ResNSW.Material();
-
-                    m.Import(ofd.FileName); //set the material data from file
-
-                    //Now use that to setup the new values
-                    IsVisable = (MaterialFlags)m.Flags;
-                    Name = m.Name;
-
-                    int CurTex = 0;
-                    foreach (ResNSW.TextureRef texture in m.TextureRefs)
-                    {
-                        MatTexture tex = new MatTexture();
-                        texture.Name = texture.Name;
-                        textures.Add(tex);
-
-                        tex.BorderColorType = m.Samplers[CurTex].BorderColorType;
-                        tex.CompareFunc = m.Samplers[CurTex].CompareFunc;
-                        tex.FilterMode = m.Samplers[CurTex].FilterMode;
-                        tex.LODBias = m.Samplers[CurTex].LODBias;
-                        tex.MaxAnisotropic = m.Samplers[CurTex].MaxAnisotropic;
-                        tex.magFilter = (int)m.Samplers[CurTex].MaxLOD;
-                        tex.minFilter = (int)m.Samplers[CurTex].MinLOD;
-                        tex.wrapModeS = (int)m.Samplers[CurTex].WrapModeU;
-                        tex.wrapModeT = (int)m.Samplers[CurTex].WrapModeV;
-                        tex.wrapModeW = (int)m.Samplers[CurTex].WrapModeW;
-                        tex.SamplerName = m.SamplerDict.GetKey(CurTex);
-                        CurTex++;
-                    }
-                    foreach (ResNSW.RenderInfo renderinfo in m.RenderInfos)
-                    {
-                        RenderInfoData rnd = new RenderInfoData();
-                        rnd.Name = renderinfo.Name;
-
-                        if (renderinfo.Type == ResNSW.RenderInfoType.Int32)
-                            rnd.Value_Ints = renderinfo.GetValueInt32s();
-                        if (renderinfo.Type == ResNSW.RenderInfoType.Single)
-                            rnd.Value_Floats = renderinfo.GetValueSingles();
-                        if (renderinfo.Type == ResNSW.RenderInfoType.String)
-                            rnd.Value_Strings = renderinfo.GetValueStrings();
-                    }
-                }
-            }
+            public int IsVisable = 1;
         }
 
         public class MatTexture

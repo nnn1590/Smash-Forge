@@ -15,6 +15,153 @@ namespace Smash_Forge
 {
     public partial class BFRES : TreeNode
     {
+        public class SwitchMaterialData : MaterialData
+        {
+            public void Load()
+            {
+
+            }
+
+            public Material CreateSwitchMaterial()
+            {
+                Material m = new Material();
+                m.Flags = (MaterialFlags)IsVisable;
+                m.Name = Name;
+                m.TextureRefs = new List<TextureRef>();
+                m.RenderInfos = new List<RenderInfo>();
+                m.Samplers = new List<Sampler>();
+                m.VolatileFlags = new byte[0];
+                m.UserDatas = new List<UserData>();
+
+                foreach (MatTexture tex in textures)
+                {
+                    TextureRef texture = new TextureRef();
+                    texture.Name = tex.Name;
+                    m.TextureRefs.Add(texture);
+
+                    Sampler samp = new Sampler();
+                    samp.BorderColorType = tex.BorderColorType;
+                    samp.CompareFunc = tex.CompareFunc;
+                    samp.FilterMode = tex.FilterMode;
+                    samp.LODBias = tex.LODBias;
+                    samp.MaxAnisotropic = tex.MaxAnisotropic;
+                    samp.MaxLOD = tex.magFilter;
+                    samp.MinLOD = tex.minFilter;
+                    samp.WrapModeU = (TexClamp)tex.wrapModeS;
+                    samp.WrapModeV = (TexClamp)tex.wrapModeT;
+                    samp.WrapModeW = (TexClamp)tex.wrapModeW;
+
+                    m.Samplers.Add(samp);
+
+                    m.SamplerDict.Add(tex.SamplerName);
+                }
+                foreach (RenderInfoData rnd in renderinfo)
+                {
+                    RenderInfo renderInfo = new RenderInfo();
+                    renderInfo.Name = rnd.Name;
+                    if (rnd.Type == Syroot.NintenTools.Bfres.RenderInfoType.Int32)
+                        renderInfo._value = rnd.Value_Ints;
+                    if (rnd.Type == Syroot.NintenTools.Bfres.RenderInfoType.Single)
+                        renderInfo._value = rnd.Value_Floats;
+                    if (rnd.Type == Syroot.NintenTools.Bfres.RenderInfoType.String)
+                        renderInfo._value = rnd.Value_Strings;
+
+                    m.RenderInfos.Add(renderInfo);
+                }
+
+                ShaderAssign shaderAssign = new ShaderAssign();
+                shaderAssign.ShaderArchiveName = shaderassign.ShaderArchive;
+                shaderAssign.ShadingModelName = shaderassign.ShaderModel;
+
+                foreach (var op in shaderassign.options)
+                {
+                    shaderAssign.ShaderOptionDict.Add(op.Key);
+                    shaderAssign.ShaderOptions.Add(op.Value);
+                }
+                foreach (var att in shaderassign.attributes)
+                {
+                    shaderAssign.AttribAssignDict.Add(att.Key);
+                    shaderAssign.AttribAssigns.Add(att.Value);
+                }
+                foreach (var smp in shaderassign.samplers)
+                {
+                    shaderAssign.SamplerAssignDict.Add(smp.Key);
+                    shaderAssign.SamplerAssigns.Add(smp.Value);
+                }
+
+                m.ShaderAssign = shaderAssign;
+
+                return m;
+            }
+
+            public void ExportSwitchMaterial()
+            {
+                Material m = CreateSwitchMaterial();
+
+                SaveFileDialog sfd = new SaveFileDialog();
+                sfd.Filter = "Supported Formats|*.bfmat;|" +
+                             "All files(*.*)|*.*";
+
+                sfd.FileName = Name;
+                sfd.DefaultExt = "bfmat";
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    m.Export(sfd.FileName, null); //Todo i need to grab the resfile instance for later version comparing
+                }
+            }
+            public void ImportSwitchMaterial()
+            {
+                OpenFileDialog ofd = new OpenFileDialog();
+                ofd.Filter = "Supported Formats|*.bfmat;|" +
+                             "All files(*.*)|*.*";
+
+                ofd.FileName = Name;
+                ofd.DefaultExt = "bfmat";
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    Material m = new Material();
+
+                    m.Import(ofd.FileName); //set the material data from file
+
+                    //Now use that to setup the new values
+                    IsVisable = (int)m.Flags;
+                    Name = m.Name;
+
+                    int CurTex = 0;
+                    foreach (TextureRef texture in m.TextureRefs)
+                    {
+                        MatTexture tex = new MatTexture();
+                        texture.Name = texture.Name;
+                        textures.Add(tex);
+
+                        tex.BorderColorType = m.Samplers[CurTex].BorderColorType;
+                        tex.CompareFunc = m.Samplers[CurTex].CompareFunc;
+                        tex.FilterMode = m.Samplers[CurTex].FilterMode;
+                        tex.LODBias = m.Samplers[CurTex].LODBias;
+                        tex.MaxAnisotropic = m.Samplers[CurTex].MaxAnisotropic;
+                        tex.magFilter = (int)m.Samplers[CurTex].MaxLOD;
+                        tex.minFilter = (int)m.Samplers[CurTex].MinLOD;
+                        tex.wrapModeS = (int)m.Samplers[CurTex].WrapModeU;
+                        tex.wrapModeT = (int)m.Samplers[CurTex].WrapModeV;
+                        tex.wrapModeW = (int)m.Samplers[CurTex].WrapModeW;
+                        tex.SamplerName = m.SamplerDict.GetKey(CurTex);
+                        CurTex++;
+                    }
+                    foreach (RenderInfo renderinfo in m.RenderInfos)
+                    {
+                        RenderInfoData rnd = new RenderInfoData();
+                        rnd.Name = renderinfo.Name;
+
+                        if (renderinfo.Type == RenderInfoType.Int32)
+                            rnd.Value_Ints = renderinfo.GetValueInt32s();
+                        if (renderinfo.Type == RenderInfoType.Single)
+                            rnd.Value_Floats = renderinfo.GetValueSingles();
+                        if (renderinfo.Type == RenderInfoType.String)
+                            rnd.Value_Strings = renderinfo.GetValueStrings();
+                    }
+                }
+            }
+        }
 
         public void Read(ResFile TargetSwitchBFRES, FileData f)
         {
@@ -124,7 +271,7 @@ namespace Smash_Forge
                         SampIndex++;
                     }
 
-                    MaterialData.ShaderAssign shaderassign = new MaterialData.ShaderAssign();
+                    MaterialData.ShaderAssignData shaderassign = new MaterialData.ShaderAssignData();
 
                     if (mat.ShaderAssign != null)
                     {
