@@ -1626,8 +1626,9 @@ namespace Smash_Forge
             public List<RenderInfoData> renderinfo = new List<RenderInfoData>();
             public List<SamplerInfo> samplerinfo = new List<SamplerInfo>();
             public Dictionary<string, ShaderParam> matparam = new Dictionary<string, ShaderParam>();
-
             public ShaderAssignData shaderassign;
+            public byte[] VolatileFlags;
+
 
             public class ShaderAssignData
             {
@@ -1646,10 +1647,8 @@ namespace Smash_Forge
             public int srcFactor = 0;
             public int alphaTest = 0;
             public int alphaFunction = 0;
-
             public int RefAlpha = 0;
             public int cullMode = 0;
-
 
             // Texture Maps
             public bool HasDiffuseMap = false;
@@ -1669,6 +1668,39 @@ namespace Smash_Forge
             public bool HasMRA = false;
 
             public int IsVisable = 1;
+
+            public void ImportSwitchMaterial()
+            {
+                OpenFileDialog ofd = new OpenFileDialog();
+                ofd.Filter = "Supported Formats|*.bfmat;|" +
+                             "All files(*.*)|*.*";
+
+                ofd.FileName = Name;
+                ofd.DefaultExt = "bfmat";
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    ResNSW.Material m = new ResNSW.Material();
+                    m.Import(ofd.FileName); //set the material data from file
+
+                    BFRES_Switch_Extensions.SetSwitchMaterial(this, m);
+                }
+            }
+
+            public void ExportSwitchMaterial(ResNSW.ResFile resFile)
+            {
+                ResNSW.Material m = BFRES_Switch_Extensions.CreateSwitchMaterial(this);
+
+                SaveFileDialog sfd = new SaveFileDialog();
+                sfd.Filter = "Supported Formats|*.bfmat;|" +
+                             "All files(*.*)|*.*";
+
+                sfd.FileName = Name;
+                sfd.DefaultExt = "bfmat";
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    m.Export(sfd.FileName, resFile); //Todo i need to grab the resfile instance for later version comparing
+                }
+            }
         }
 
         public class MatTexture
@@ -1768,6 +1800,9 @@ namespace Smash_Forge
             public float[] Value_float2x3 = new float[12];
             public uint Value_UInt;
             public bool Value_Bool;
+            public byte[] UnkownTypeData;
+            public uint DataSize;
+            public uint DataOffset;
 
             public override string ToString()
             {

@@ -15,154 +15,6 @@ namespace Smash_Forge
 {
     public partial class BFRES : TreeNode
     {
-        public class SwitchMaterialData : MaterialData
-        {
-            public void Load()
-            {
-
-            }
-
-            public Material CreateSwitchMaterial()
-            {
-                Material m = new Material();
-                m.Flags = (MaterialFlags)IsVisable;
-                m.Name = Name;
-                m.TextureRefs = new List<TextureRef>();
-                m.RenderInfos = new List<RenderInfo>();
-                m.Samplers = new List<Sampler>();
-                m.VolatileFlags = new byte[0];
-                m.UserDatas = new List<UserData>();
-
-                foreach (MatTexture tex in textures)
-                {
-                    TextureRef texture = new TextureRef();
-                    texture.Name = tex.Name;
-                    m.TextureRefs.Add(texture);
-
-                    Sampler samp = new Sampler();
-                    samp.BorderColorType = tex.BorderColorType;
-                    samp.CompareFunc = tex.CompareFunc;
-                    samp.FilterMode = tex.FilterMode;
-                    samp.LODBias = tex.LODBias;
-                    samp.MaxAnisotropic = tex.MaxAnisotropic;
-                    samp.MaxLOD = tex.magFilter;
-                    samp.MinLOD = tex.minFilter;
-                    samp.WrapModeU = (TexClamp)tex.wrapModeS;
-                    samp.WrapModeV = (TexClamp)tex.wrapModeT;
-                    samp.WrapModeW = (TexClamp)tex.wrapModeW;
-
-                    m.Samplers.Add(samp);
-
-                    m.SamplerDict.Add(tex.SamplerName);
-                }
-                foreach (RenderInfoData rnd in renderinfo)
-                {
-                    RenderInfo renderInfo = new RenderInfo();
-                    renderInfo.Name = rnd.Name;
-                    if (rnd.Type == Syroot.NintenTools.Bfres.RenderInfoType.Int32)
-                        renderInfo._value = rnd.Value_Ints;
-                    if (rnd.Type == Syroot.NintenTools.Bfres.RenderInfoType.Single)
-                        renderInfo._value = rnd.Value_Floats;
-                    if (rnd.Type == Syroot.NintenTools.Bfres.RenderInfoType.String)
-                        renderInfo._value = rnd.Value_Strings;
-
-                    m.RenderInfos.Add(renderInfo);
-                }
-
-                ShaderAssign shaderAssign = new ShaderAssign();
-                shaderAssign.ShaderArchiveName = shaderassign.ShaderArchive;
-                shaderAssign.ShadingModelName = shaderassign.ShaderModel;
-
-                foreach (var op in shaderassign.options)
-                {
-                    shaderAssign.ShaderOptionDict.Add(op.Key);
-                    shaderAssign.ShaderOptions.Add(op.Value);
-                }
-                foreach (var att in shaderassign.attributes)
-                {
-                    shaderAssign.AttribAssignDict.Add(att.Key);
-                    shaderAssign.AttribAssigns.Add(att.Value);
-                }
-                foreach (var smp in shaderassign.samplers)
-                {
-                    shaderAssign.SamplerAssignDict.Add(smp.Key);
-                    shaderAssign.SamplerAssigns.Add(smp.Value);
-                }
-
-                m.ShaderAssign = shaderAssign;
-
-                return m;
-            }
-
-            public void ExportSwitchMaterial()
-            {
-                Material m = CreateSwitchMaterial();
-
-                SaveFileDialog sfd = new SaveFileDialog();
-                sfd.Filter = "Supported Formats|*.bfmat;|" +
-                             "All files(*.*)|*.*";
-
-                sfd.FileName = Name;
-                sfd.DefaultExt = "bfmat";
-                if (sfd.ShowDialog() == DialogResult.OK)
-                {
-                    m.Export(sfd.FileName, null); //Todo i need to grab the resfile instance for later version comparing
-                }
-            }
-            public void ImportSwitchMaterial()
-            {
-                OpenFileDialog ofd = new OpenFileDialog();
-                ofd.Filter = "Supported Formats|*.bfmat;|" +
-                             "All files(*.*)|*.*";
-
-                ofd.FileName = Name;
-                ofd.DefaultExt = "bfmat";
-                if (ofd.ShowDialog() == DialogResult.OK)
-                {
-                    Material m = new Material();
-
-                    m.Import(ofd.FileName); //set the material data from file
-
-                    //Now use that to setup the new values
-                    IsVisable = (int)m.Flags;
-                    Name = m.Name;
-
-                    int CurTex = 0;
-                    foreach (TextureRef texture in m.TextureRefs)
-                    {
-                        MatTexture tex = new MatTexture();
-                        texture.Name = texture.Name;
-                        textures.Add(tex);
-
-                        tex.BorderColorType = m.Samplers[CurTex].BorderColorType;
-                        tex.CompareFunc = m.Samplers[CurTex].CompareFunc;
-                        tex.FilterMode = m.Samplers[CurTex].FilterMode;
-                        tex.LODBias = m.Samplers[CurTex].LODBias;
-                        tex.MaxAnisotropic = m.Samplers[CurTex].MaxAnisotropic;
-                        tex.magFilter = (int)m.Samplers[CurTex].MaxLOD;
-                        tex.minFilter = (int)m.Samplers[CurTex].MinLOD;
-                        tex.wrapModeS = (int)m.Samplers[CurTex].WrapModeU;
-                        tex.wrapModeT = (int)m.Samplers[CurTex].WrapModeV;
-                        tex.wrapModeW = (int)m.Samplers[CurTex].WrapModeW;
-                        tex.SamplerName = m.SamplerDict.GetKey(CurTex);
-                        CurTex++;
-                    }
-                    foreach (RenderInfo renderinfo in m.RenderInfos)
-                    {
-                        RenderInfoData rnd = new RenderInfoData();
-                        rnd.Name = renderinfo.Name;
-
-                        if (renderinfo.Type == RenderInfoType.Int32)
-                            rnd.Value_Ints = renderinfo.GetValueInt32s();
-                        if (renderinfo.Type == RenderInfoType.Single)
-                            rnd.Value_Floats = renderinfo.GetValueSingles();
-                        if (renderinfo.Type == RenderInfoType.String)
-                            rnd.Value_Strings = renderinfo.GetValueStrings();
-                    }
-                }
-            }
-        }
-
         public void Read(ResFile TargetSwitchBFRES, FileData f)
         {
 
@@ -263,6 +115,7 @@ namespace Smash_Forge
                     Material mat = mdl.Materials[shp.MaterialIndex];
 
                     poly.material.Name = mat.Name;
+                    poly.material.VolatileFlags = mat.VolatileFlags;
 
                     int SampIndex = 0;
                     foreach (var smp in mat.SamplerDict)
@@ -843,7 +696,6 @@ namespace Smash_Forge
         {
             using (Syroot.BinaryData.BinaryDataReader reader = new Syroot.BinaryData.BinaryDataReader(new MemoryStream(mat.ShaderParamData)))
             {
-
                 reader.ByteOrder = Syroot.BinaryData.ByteOrder.LittleEndian;
                 foreach (Syroot.NintenTools.NSW.Bfres.ShaderParam param in mat.ShaderParams)
                 {
@@ -851,34 +703,31 @@ namespace Smash_Forge
 
                     prm.Type = (Syroot.NintenTools.Bfres.ShaderParamType)param.Type;
                     prm.Name = param.Name;
+                    prm.DataOffset = param.DataOffset;
 
+                    reader.Seek(param.DataOffset, SeekOrigin.Begin);
                     switch (param.Type)
                     {
                         case ShaderParamType.Float:
-                            reader.Seek(param.DataOffset, SeekOrigin.Begin);
                             prm.Value_float = reader.ReadSingle();
                             break;
                         case ShaderParamType.Float2:
-                            reader.Seek(param.DataOffset, SeekOrigin.Begin);
                             prm.Value_float2 = new Vector2(
                                 reader.ReadSingle(),
                                 reader.ReadSingle());
                             break;
                         case ShaderParamType.Float3:
-                            reader.Seek(param.DataOffset, SeekOrigin.Begin);
                             prm.Value_float3 = new Vector3(
                                     reader.ReadSingle(),
                                     reader.ReadSingle(),
                                     reader.ReadSingle()); break;
                         case ShaderParamType.Float4:
-                            reader.Seek(param.DataOffset, SeekOrigin.Begin);
                             prm.Value_float4 = new Vector4(
                                     reader.ReadSingle(),
                                     reader.ReadSingle(),
                                     reader.ReadSingle(),
                                     reader.ReadSingle()); break;
                         case ShaderParamType.TexSrt:
-                            reader.Seek(param.DataOffset, SeekOrigin.Begin);
                             ShaderParam.TextureSRT texSRT = new ShaderParam.TextureSRT();
                             texSRT.Mode = reader.ReadSingle(); //Scale mode, Maya, max ect
                             texSRT.scale = new Vector2(reader.ReadSingle(), reader.ReadSingle());
@@ -894,6 +743,9 @@ namespace Smash_Forge
                             break;
                         case ShaderParamType.Float4x4:
                             prm.Value_float4x4 = reader.ReadSingles(16);
+                            break;
+                        default:
+                            prm.UnkownTypeData = reader.ReadBytes((int)param.DataSize);
                             break;
                     }
                     poly.material.matparam.Add(param.Name, prm);
@@ -929,8 +781,7 @@ namespace Smash_Forge
                     int s = 0;
                     foreach (Shape shp in fmdl.Shapes)
                     {
-                        byte[] data = fmdl.Materials[shp.MaterialIndex].ShaderParamData;
-                        byte[] NewParamData = WriteShaderParams(data, models[mdl].poly[s]);
+                        byte[] NewParamData = BFRES_Switch_Extensions.WriteShaderParams(models[mdl].poly[s].material);
 
                         if (SaveShaderParam == true)
                         {
@@ -1190,62 +1041,6 @@ namespace Smash_Forge
                         MessageBox.Show("BNTX Is too big or small! Must be original Size!");
                     }
                 }
-            }
-        }
-        public byte[] WriteShaderParams(byte[] data, Mesh m)
-        {
-            //Write data to this byte array. 
-            using (Syroot.BinaryData.BinaryDataWriter writer = new Syroot.BinaryData.BinaryDataWriter(new MemoryStream(data)))
-            {
-                writer.ByteOrder = Syroot.BinaryData.ByteOrder.LittleEndian;
-                foreach (var prm in m.material.matparam.Values)
-                {
-                    switch (prm.Type)
-                    {
-                        case Syroot.NintenTools.Bfres.ShaderParamType.Float:
-                            writer.Write(prm.Value_float);
-                            break;
-                        case Syroot.NintenTools.Bfres.ShaderParamType.Float2:
-                            writer.Write(prm.Value_float2.X);
-                            writer.Write(prm.Value_float2.Y);
-                            break;
-                        case Syroot.NintenTools.Bfres.ShaderParamType.Float3:
-                            writer.Write(prm.Value_float3.X);
-                            writer.Write(prm.Value_float3.Y);
-                            writer.Write(prm.Value_float3.Z);
-                            break;
-                        case Syroot.NintenTools.Bfres.ShaderParamType.Float4:
-                            writer.Write(prm.Value_float4.X);
-                            writer.Write(prm.Value_float4.Y);
-                            writer.Write(prm.Value_float4.Z);
-                            writer.Write(prm.Value_float4.W);
-                            break;
-                        case Syroot.NintenTools.Bfres.ShaderParamType.TexSrt:
-                            writer.Write(prm.Value_TexSrt.Mode);
-                            writer.Write(prm.Value_TexSrt.scale.X);
-                            writer.Write(prm.Value_TexSrt.scale.Y);
-                            writer.Write(prm.Value_TexSrt.rotate);
-                            writer.Write(prm.Value_TexSrt.translate.X);
-                            writer.Write(prm.Value_TexSrt.translate.Y);
-                            break;
-                        case Syroot.NintenTools.Bfres.ShaderParamType.Float4x4:
-                            foreach (float f in prm.Value_float4x4)
-                            {
-                                writer.Write(f);
-                            }
-                            break;
-                        case Syroot.NintenTools.Bfres.ShaderParamType.UInt:
-                            writer.Write(prm.Value_UInt);
-                            break;
-                        default:
-                            MessageBox.Show("Format not added to shader param saving " + prm.Type);
-                            MessageBox.Show("Shader param will not save!");
-                            SaveShaderParam = false;
-                            break;
-
-                    }
-                }
-                return data;
             }
         }
 

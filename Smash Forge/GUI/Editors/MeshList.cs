@@ -1730,14 +1730,23 @@ namespace Smash_Forge
             }
         }
 
-        private void exportMaterialsXMLToolStripMenuItem_Click(object sender, EventArgs e)
+        private void exportMaterialsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (!(filesTreeView.SelectedNode is BFRES.Mesh))
                 return;
 
             BFRES.Mesh msh = (BFRES.Mesh)filesTreeView.SelectedNode;
 
-            msh.ExportMaterials2XML();
+            foreach (TreeNode con in filesTreeView.Nodes)
+            {
+                if (con is ModelContainer)
+                {
+                    if (((ModelContainer)con).Bfres != null)
+                    {
+                        msh.material.ExportSwitchMaterial(((ModelContainer)con).Bfres.TargetSwitchBFRES);
+                    }
+                }
+            }
         }
 
         private void bfresConvertWiiU2SwitchToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1838,7 +1847,6 @@ namespace Smash_Forge
                 }
             }
         }
-
         #endregion
 
         private void KCLtoolStripMenuItem2_Click(object sender, EventArgs e)
