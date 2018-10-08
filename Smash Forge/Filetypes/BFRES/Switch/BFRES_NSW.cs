@@ -15,7 +15,6 @@ namespace Smash_Forge
 {
     public partial class BFRES : TreeNode
     {
-
         public void Read(ResFile TargetSwitchBFRES, FileData f)
         {
 
@@ -116,15 +115,16 @@ namespace Smash_Forge
                     Material mat = mdl.Materials[shp.MaterialIndex];
 
                     poly.material.Name = mat.Name;
+                    poly.material.VolatileFlags = mat.VolatileFlags;
 
                     int SampIndex = 0;
                     foreach (var smp in mat.SamplerDict)
                     {
-                        poly.material.Samplers.Add(smp.Key, SampIndex);
+                        poly.material.Samplers.Add(smp.ToString(), SampIndex);
                         SampIndex++;
                     }
 
-                    MaterialData.ShaderAssign shaderassign = new MaterialData.ShaderAssign();
+                    MaterialData.ShaderAssignData shaderassign = new MaterialData.ShaderAssignData();
 
                     if (mat.ShaderAssign != null)
                     {
@@ -134,7 +134,7 @@ namespace Smash_Forge
                         int o = 0;
                         foreach (var op in mat.ShaderAssign.ShaderOptionDict)
                         {
-                            shaderassign.options.Add(op.Key, mat.ShaderAssign.ShaderOptions[o]);
+                            shaderassign.options.Add(op.ToString(), mat.ShaderAssign.ShaderOptions[o]);
                             o++;
                         }
                         int sa = 0;
@@ -142,14 +142,14 @@ namespace Smash_Forge
                         {
                             //       Console.WriteLine($"{smp.Key} ---> {mat.ShaderAssign.SamplerAssigns[sa]}");
                             if (!shaderassign.samplers.ContainsKey(mat.ShaderAssign.SamplerAssigns[sa]))
-                                shaderassign.samplers.Add(mat.ShaderAssign.SamplerAssigns[sa], smp.Key);
+                                shaderassign.samplers.Add(mat.ShaderAssign.SamplerAssigns[sa], smp.ToString());
                             sa++;
                         }
 
                         int va = 0;
                         foreach (var att in mat.ShaderAssign.AttribAssignDict)
                         {
-                            shaderassign.attributes.Add(att.Key, mat.ShaderAssign.AttribAssigns[va]);
+                            shaderassign.attributes.Add(att.ToString(), mat.ShaderAssign.AttribAssigns[va]);
                             va++;
                         }
 
@@ -185,6 +185,9 @@ namespace Smash_Forge
         }
         private void ReadSkeleton(FMDL_Model model, Model mdl)
         {
+            if (mdl.Skeleton.MatrixToBoneList == null)
+                mdl.Skeleton.MatrixToBoneList = new List<ushort>();
+
             model.Node_Array = new int[mdl.Skeleton.MatrixToBoneList.Count];
             int nodes = 0;
             foreach (ushort node in mdl.Skeleton.MatrixToBoneList)
@@ -365,7 +368,7 @@ namespace Smash_Forge
                 texture.wrapModeS = (int)mat.Samplers[id].WrapModeU;
                 texture.wrapModeT = (int)mat.Samplers[id].WrapModeV;
                 texture.wrapModeW = (int)mat.Samplers[id].WrapModeW;
-                texture.SamplerName = mat.SamplerDict.Keys.ElementAt(id);
+                texture.SamplerName = mat.SamplerDict.GetKey(id);
                 texture.Name = TextureName;
 
 
@@ -500,22 +503,13 @@ namespace Smash_Forge
                 switch (rnd.Type)
                 {
                     case RenderInfoType.Int32:
-                        foreach (int rn in rnd.GetValueInt32s())
-                        {
-                            r.Value_Int = rn;
-                        }
+                        r.Value_Ints = rnd.GetValueInt32s();
                         break;
                     case RenderInfoType.Single:
-                        foreach (float rn in rnd.GetValueSingles())
-                        {
-                            r.Value_Float = rn;
-                        }
+                        r.Value_Floats = rnd.GetValueSingles();
                         break;
                     case RenderInfoType.String:
-                        foreach (string rn in rnd.GetValueStrings())
-                        {
-                            r.Value_String = rn;
-                        }
+                        r.Value_Strings = rnd.GetValueStrings();
                         break;
                 }
 
@@ -528,140 +522,173 @@ namespace Smash_Forge
 
         private void SetRenderMode(MaterialData mat, RenderInfoData r, Mesh m)
         {
-            switch (r.Name)
+            if (r.Type == Syroot.NintenTools.Bfres.RenderInfoType.Int32)
             {
-                case "gsys_render_state_mode":
-                    if (r.Value_String == "transparent")
+                foreach (int value in r.Value_Ints)
+                {
+                    switch (r.Name)
                     {
-                        m.isTransparent = true;
+                        case "mode":
+                            if (value == 1)
+                            {
+                            }
+                            if (value == 2)
+                            {
+                                m.isTransparent = true;
+                            }
+                            break;
                     }
-                    if (r.Value_String == "alpha")
-                    {
-                        m.isTransparent = true;
-                    }
-                    if (r.Value_String == "mask")
-                    {
-                        m.isTransparent = true;
-                    }
-                    break;
-                case "mode":
-                    if (r.Value_Int == 1)
-                    {
-                    }
-                    if (r.Value_Int == 2)
-                    {
-                        m.isTransparent = true;
-                    }
-                    break;
+                }
             }
+            if (r.Type == Syroot.NintenTools.Bfres.RenderInfoType.String)
+            {
+                foreach (string value in r.Value_Strings)
+                {
+                    switch (r.Name)
+                    {
+                        case "gsys_render_state_mode":
+                            if (value == "transparent")
+                            {
+                                m.isTransparent = true;
+                            }
+                            if (value == "alpha")
+                            {
+                                m.isTransparent = true;
+                            }
+                            if (value == "mask")
+                            {
+                                m.isTransparent = true;
+                            }
+                            break;
+                    }
+                }
+            }         
         }
 
         private void SetAlphaBlending(MaterialData mat, RenderInfoData r)
         {
-            switch (r.Name)
+            if (r.Type == Syroot.NintenTools.Bfres.RenderInfoType.String)
             {
-                case "gsys_color_blend_rgb_src_func":
-                    if (r.Value_String == "src_alpha")
+                foreach (string value in r.Value_Strings)
+                {
+                    switch (r.Name)
                     {
-                        mat.srcFactor = 1;
-                    }
-                    break;
-                case "gsys_color_blend_rgb_dst_func":
-                    if (r.Value_String == "one_minus_src_alpha")
-                    {
-                        mat.dstFactor = 1;
-                    }
-                    break;
-                case "gsys_color_blend_rgb_op":
-                    if (r.Value_String == "add")
-                    {
+                        case "gsys_color_blend_rgb_src_func":
+                            if (value == "src_alpha")
+                            {
+                                mat.srcFactor = 1;
+                            }
+                            break;
+                        case "gsys_color_blend_rgb_dst_func":
+                            if (value == "one_minus_src_alpha")
+                            {
+                                mat.dstFactor = 1;
+                            }
+                            break;
+                        case "gsys_color_blend_rgb_op":
+                            if (value == "add")
+                            {
 
-                    }
-                    break;
-                case "gsys_color_blend_alpha_op":
-                    if (r.Value_String == "add")
-                    {
-                    }
-                    break;
-                case "gsys_color_blend_alpha_src_func":
-                    if (r.Value_String == "one")
-                    {
+                            }
+                            break;
+                        case "gsys_color_blend_alpha_op":
+                            if (value == "add")
+                            {
+                            }
+                            break;
+                        case "gsys_color_blend_alpha_src_func":
+                            if (value == "one")
+                            {
 
+                            }
+                            break;
+                        case "gsys_color_blend_alpha_dst_func":
+                            if (value == "zero")
+                            {
+                            }
+                            break;
+                        case "gsys_alpha_test_func":
+                            break;
+                        case "gsys_alpha_test_value":
+                            break;
+                        case "sourceColorBlendFactor":
+                            if (value == "sourceAlpha")
+                            {
+                                mat.srcFactor = 1;
+                            }
+                            break;
+                        default:
+                            break;
                     }
-                    break;
-                case "gsys_color_blend_alpha_dst_func":
-                    if (r.Value_String == "zero")
-                    {
-                    }
-                    break;
-                case "gsys_alpha_test_func":
-                    break;
-                case "gsys_alpha_test_value":
-                    break;
-                case "sourceColorBlendFactor":
-                    if (r.Value_String == "sourceAlpha")
-                    {
-                        mat.srcFactor = 1;
-                    }
-                    break;
-                default:
-                    break;
-            }
+                }
+            }  
         }
         private static void SetAlphaTesting(MaterialData mat, RenderInfoData r)
         {
-            switch (r.Name)
+            if (r.Type == Syroot.NintenTools.Bfres.RenderInfoType.String)
             {
-                case "gsys_alpha_test_enable":
-                    if (r.Value_String == "true")
+                foreach (string value in r.Value_Strings)
+                {
+                    switch (r.Name)
                     {
+                        case "gsys_alpha_test_enable":
+                            if (value == "true")
+                            {
 
-                    }
-                    else
-                    {
+                            }
+                            else
+                            {
 
-                    }
-                    break;
-                case "gsys_alpha_test_func":
-                    if (r.Value_String == "lequal")
-                    {
+                            }
+                            break;
+                        case "gsys_alpha_test_func":
+                            if (value == "lequal")
+                            {
 
-                    }
-                    else if (r.Value_String == "gequal")
-                    {
+                            }
+                            else if (value == "gequal")
+                            {
 
+                            }
+                            break;
+                        case "gsys_alpha_test_value":
+                            break;
+                        default:
+                            break;
                     }
-                    break;
-                case "gsys_alpha_test_value":
-                    break;
-                default:
-                    break;
-            }
+                }
+            }    
         }
         private static void SetDepthTesting(MaterialData mat, RenderInfoData r)
         {
-            switch (r.Name)
+            if (r.Type == Syroot.NintenTools.Bfres.RenderInfoType.String)
             {
-                case "gsys_depth_test_enable":
-                    if (r.Value_String == "true")
+                foreach (string value in r.Value_Strings)
+                {
+                    switch (r.Name)
                     {
+                        case "gsys_depth_test_enable":
+                            if (value == "true")
+                            {
 
-                    }
-                    else
-                    {
+                            }
+                            else
+                            {
 
-                    }
-                    break;
-                case "gsys_depth_test_func":
-                    if (r.Value_String == "lequal")
-                    {
+                            }
+                            break;
+                        case "gsys_depth_test_func":
+                            if (value == "lequal")
+                            {
 
+                            }
+                            break;
+                        case "gsys_depth_test_write":
+                            break;
+                        default:
+                            break;
                     }
-                    break;
-                case "gsys_depth_test_write":
-                    break;
-                default:
-                    break;
+                }
             }
         }
 
@@ -669,7 +696,6 @@ namespace Smash_Forge
         {
             using (Syroot.BinaryData.BinaryDataReader reader = new Syroot.BinaryData.BinaryDataReader(new MemoryStream(mat.ShaderParamData)))
             {
-
                 reader.ByteOrder = Syroot.BinaryData.ByteOrder.LittleEndian;
                 foreach (Syroot.NintenTools.NSW.Bfres.ShaderParam param in mat.ShaderParams)
                 {
@@ -677,34 +703,31 @@ namespace Smash_Forge
 
                     prm.Type = (Syroot.NintenTools.Bfres.ShaderParamType)param.Type;
                     prm.Name = param.Name;
+                    prm.DataOffset = param.DataOffset;
 
+                    reader.Seek(param.DataOffset, SeekOrigin.Begin);
                     switch (param.Type)
                     {
                         case ShaderParamType.Float:
-                            reader.Seek(param.DataOffset, SeekOrigin.Begin);
                             prm.Value_float = reader.ReadSingle();
                             break;
                         case ShaderParamType.Float2:
-                            reader.Seek(param.DataOffset, SeekOrigin.Begin);
                             prm.Value_float2 = new Vector2(
                                 reader.ReadSingle(),
                                 reader.ReadSingle());
                             break;
                         case ShaderParamType.Float3:
-                            reader.Seek(param.DataOffset, SeekOrigin.Begin);
                             prm.Value_float3 = new Vector3(
                                     reader.ReadSingle(),
                                     reader.ReadSingle(),
                                     reader.ReadSingle()); break;
                         case ShaderParamType.Float4:
-                            reader.Seek(param.DataOffset, SeekOrigin.Begin);
                             prm.Value_float4 = new Vector4(
                                     reader.ReadSingle(),
                                     reader.ReadSingle(),
                                     reader.ReadSingle(),
                                     reader.ReadSingle()); break;
                         case ShaderParamType.TexSrt:
-                            reader.Seek(param.DataOffset, SeekOrigin.Begin);
                             ShaderParam.TextureSRT texSRT = new ShaderParam.TextureSRT();
                             texSRT.Mode = reader.ReadSingle(); //Scale mode, Maya, max ect
                             texSRT.scale = new Vector2(reader.ReadSingle(), reader.ReadSingle());
@@ -720,6 +743,9 @@ namespace Smash_Forge
                             break;
                         case ShaderParamType.Float4x4:
                             prm.Value_float4x4 = reader.ReadSingles(16);
+                            break;
+                        default:
+                            prm.UnkownTypeData = reader.ReadBytes((int)param.DataSize);
                             break;
                     }
                     poly.material.matparam.Add(param.Name, prm);
@@ -755,8 +781,7 @@ namespace Smash_Forge
                     int s = 0;
                     foreach (Shape shp in fmdl.Shapes)
                     {
-                        byte[] data = fmdl.Materials[shp.MaterialIndex].ShaderParamData;
-                        byte[] NewParamData = WriteShaderParams(data, models[mdl].poly[s]);
+                        byte[] NewParamData = BFRES_Switch_Extensions.WriteShaderParams(models[mdl].poly[s].material);
 
                         if (SaveShaderParam == true)
                         {
@@ -1016,62 +1041,6 @@ namespace Smash_Forge
                         MessageBox.Show("BNTX Is too big or small! Must be original Size!");
                     }
                 }
-            }
-        }
-        public byte[] WriteShaderParams(byte[] data, Mesh m)
-        {
-            //Write data to this byte array. 
-            using (Syroot.BinaryData.BinaryDataWriter writer = new Syroot.BinaryData.BinaryDataWriter(new MemoryStream(data)))
-            {
-                writer.ByteOrder = Syroot.BinaryData.ByteOrder.LittleEndian;
-                foreach (var prm in m.material.matparam.Values)
-                {
-                    switch (prm.Type)
-                    {
-                        case Syroot.NintenTools.Bfres.ShaderParamType.Float:
-                            writer.Write(prm.Value_float);
-                            break;
-                        case Syroot.NintenTools.Bfres.ShaderParamType.Float2:
-                            writer.Write(prm.Value_float2.X);
-                            writer.Write(prm.Value_float2.Y);
-                            break;
-                        case Syroot.NintenTools.Bfres.ShaderParamType.Float3:
-                            writer.Write(prm.Value_float3.X);
-                            writer.Write(prm.Value_float3.Y);
-                            writer.Write(prm.Value_float3.Z);
-                            break;
-                        case Syroot.NintenTools.Bfres.ShaderParamType.Float4:
-                            writer.Write(prm.Value_float4.X);
-                            writer.Write(prm.Value_float4.Y);
-                            writer.Write(prm.Value_float4.Z);
-                            writer.Write(prm.Value_float4.W);
-                            break;
-                        case Syroot.NintenTools.Bfres.ShaderParamType.TexSrt:
-                            writer.Write(prm.Value_TexSrt.Mode);
-                            writer.Write(prm.Value_TexSrt.scale.X);
-                            writer.Write(prm.Value_TexSrt.scale.Y);
-                            writer.Write(prm.Value_TexSrt.rotate);
-                            writer.Write(prm.Value_TexSrt.translate.X);
-                            writer.Write(prm.Value_TexSrt.translate.Y);
-                            break;
-                        case Syroot.NintenTools.Bfres.ShaderParamType.Float4x4:
-                            foreach (float f in prm.Value_float4x4)
-                            {
-                                writer.Write(f);
-                            }
-                            break;
-                        case Syroot.NintenTools.Bfres.ShaderParamType.UInt:
-                            writer.Write(prm.Value_UInt);
-                            break;
-                        default:
-                            MessageBox.Show("Format not added to shader param saving " + prm.Type);
-                            MessageBox.Show("Shader param will not save!");
-                            SaveShaderParam = false;
-                            break;
-
-                    }
-                }
-                return data;
             }
         }
 

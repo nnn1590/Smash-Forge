@@ -264,7 +264,7 @@ namespace Smash_Forge
 
                     string TextureName = "";
 
-                    MaterialData.ShaderAssign shaderassign = new MaterialData.ShaderAssign();
+                    MaterialData.ShaderAssignData shaderassign = new MaterialData.ShaderAssignData();
 
                     if (mat.ShaderAssign != null) //Some special cases (env models) have none
                     {

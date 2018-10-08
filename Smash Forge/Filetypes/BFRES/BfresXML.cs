@@ -147,13 +147,16 @@ namespace Smash_Forge
                     switch (rnd.Type)
                     {
                         case RenderInfoType.String:
-                            writer.WriteAttributeString(rnd.Name, rnd.Value_String);
+                            foreach (string item in rnd.Value_Strings)
+                                writer.WriteAttributeString(rnd.Name, item);
                             break;
                         case RenderInfoType.Int32:
-                            writer.WriteAttributeString(rnd.Name, rnd.Value_Int.ToString());
+                            foreach (int item in rnd.Value_Ints)
+                                writer.WriteAttributeString(rnd.Name, item.ToString());
                             break;
                         case RenderInfoType.Single:
-                            writer.WriteAttributeString(rnd.Name, rnd.Value_Float.ToString());
+                            foreach (float item in rnd.Value_Floats)
+                                writer.WriteAttributeString(rnd.Name, item.ToString());
                             break;
                     }
                     writer.WriteEndElement();

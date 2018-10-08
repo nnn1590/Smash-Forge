@@ -47,14 +47,15 @@ namespace Smash_Forge
                 {
                     foreach (string nm in vis.Names) //Loop through every bone. Not all have base and curve data
                     {
-                        BFRES.MatAnimEntry bone = new BFRES.MatAnimEntry();
+                        MatAnimEntry bone = new MatAnimEntry();
                         bone.Text = vis.Names[boneindx];
 
-
+                        if (vis.BaseDataList == null)
+                            vis.BaseDataList = new bool[0];
 
                         if (boneindx < vis.BaseDataList.Length)
                         {
-                            BFRES.MatAnimData md = new BFRES.MatAnimData();
+                            MatAnimData md = new MatAnimData();
 
                             bool bas = vis.BaseDataList[boneindx];
                             md.VIS_State = bas;

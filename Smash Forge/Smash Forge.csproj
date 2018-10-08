@@ -165,6 +165,7 @@
     <Compile Include="Filetypes\BFRES\BfresRenderMesh.cs" />
     <Compile Include="Filetypes\BFRES\BFRES_Main.cs" />
     <Compile Include="Filetypes\BFRES\DisplayVertex.cs" />
+    <Compile Include="Filetypes\BFRES\Switch\BFRES_NSW_Extensions.cs" />
     <Compile Include="Filetypes\BFRES\Switch\BFRES_NSW.cs" />
     <Compile Include="Filetypes\BFRES\Switch\BNTX.cs" />
     <Compile Include="Filetypes\BFRES\Switch\DDS_Decompress.cs" />

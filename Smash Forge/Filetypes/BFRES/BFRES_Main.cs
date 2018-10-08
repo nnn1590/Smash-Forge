@@ -768,21 +768,24 @@ namespace Smash_Forge
             switch (r.Name)
             {
                 case "gsys_render_state_display_face":
-                    if (r.Value_String == "front")
+                    foreach (string value in r.Value_Strings)
                     {
-                        GL.CullFace(CullFaceMode.Back);
-                    }
-                    else if (r.Value_String == "back")
-                    {
-                        GL.CullFace(CullFaceMode.Front);
-                    }
-                    else if (r.Value_String == "both")
-                    {
-                        GL.Disable(EnableCap.CullFace);
-                    }
-                    else if (r.Value_String == "none")
-                    {
-                        GL.CullFace(CullFaceMode.FrontAndBack);
+                        if (value == "front")
+                        {
+                            GL.CullFace(CullFaceMode.Back);
+                        }
+                        else if (value == "back")
+                        {
+                            GL.CullFace(CullFaceMode.Front);
+                        }
+                        else if (value == "both")
+                        {
+                            GL.Disable(EnableCap.CullFace);
+                        }
+                        else if (value == "none")
+                        {
+                            GL.CullFace(CullFaceMode.FrontAndBack);
+                        }
                     }
                     break;
             }
@@ -902,8 +905,8 @@ namespace Smash_Forge
 
             // TODO: These aren't controlled by the Texture class yet.
             GL.TexParameter(TextureTarget.Texture2D, (TextureParameterName)ExtTextureFilterAnisotropic.TextureMaxAnisotropyExt, 0.0f);
-            if (matTexture.mipDetail == 0x4 || matTexture.mipDetail == 0x6)
-                GL.TexParameter(TextureTarget.Texture2D, (TextureParameterName)ExtTextureFilterAnisotropic.TextureMaxAnisotropyExt, 4.0f);
+     //       if (matTexture.mipDetail == 0x4 || matTexture.mipDetail == 0x6)
+     //           GL.TexParameter(TextureTarget.Texture2D, (TextureParameterName)ExtTextureFilterAnisotropic.TextureMaxAnisotropyExt, 4.0f);
         }
 
 
@@ -1623,10 +1626,11 @@ namespace Smash_Forge
             public List<RenderInfoData> renderinfo = new List<RenderInfoData>();
             public List<SamplerInfo> samplerinfo = new List<SamplerInfo>();
             public Dictionary<string, ShaderParam> matparam = new Dictionary<string, ShaderParam>();
+            public ShaderAssignData shaderassign;
+            public byte[] VolatileFlags;
 
-            public ShaderAssign shaderassign;
 
-            public class ShaderAssign
+            public class ShaderAssignData
             {
                 public string ShaderModel = "";
                 public string ShaderArchive = "";
@@ -1643,10 +1647,8 @@ namespace Smash_Forge
             public int srcFactor = 0;
             public int alphaTest = 0;
             public int alphaFunction = 0;
-
             public int RefAlpha = 0;
             public int cullMode = 0;
-
 
             // Texture Maps
             public bool HasDiffuseMap = false;
@@ -1665,36 +1667,40 @@ namespace Smash_Forge
             public bool HasRoughnessMap = false;
             public bool HasMRA = false;
 
-            public MaterialFlags IsVisable = MaterialFlags.Visible;
+            public int IsVisable = 1;
 
-            public Material Clone()
+            public void ImportSwitchMaterial()
             {
-                Material m = new Material();
+                OpenFileDialog ofd = new OpenFileDialog();
+                ofd.Filter = "Supported Formats|*.bfmat;|" +
+                             "All files(*.*)|*.*";
 
-                m.Flags = IsVisable;
-                m.Name = Name;
-                m.TextureRefs = new List<TextureRef>();
-                m.RenderInfos = new ResDict<RenderInfo>();
-                m.Samplers = new ResDict<Sampler>();
-                //      m.ShaderAssign = new ShaderAssign();
-                m.ShaderParamData = new byte[0];
-                m.ShaderParams = new ResDict<Syroot.NintenTools.Bfres.ShaderParam>();
-                m.UserData = new ResDict<UserData>();
-                m.VolatileFlags = new byte[0];
-
-
-                foreach (MatTexture tex in textures)
+                ofd.FileName = Name;
+                ofd.DefaultExt = "bfmat";
+                if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    TextureRef texture = new TextureRef();
-                    texture.Name = tex.Name;
-                    texture.Texture = new Syroot.NintenTools.Bfres.Texture();
+                    ResNSW.Material m = new ResNSW.Material();
+                    m.Import(ofd.FileName); //set the material data from file
 
-                    m.TextureRefs.Add(texture);
+                    BFRES_Switch_Extensions.SetSwitchMaterial(this, m);
                 }
-
-                return m;
             }
 
+            public void ExportSwitchMaterial(ResNSW.ResFile resFile)
+            {
+                ResNSW.Material m = BFRES_Switch_Extensions.CreateSwitchMaterial(this);
+
+                SaveFileDialog sfd = new SaveFileDialog();
+                sfd.Filter = "Supported Formats|*.bfmat;|" +
+                             "All files(*.*)|*.*";
+
+                sfd.FileName = Name;
+                sfd.DefaultExt = "bfmat";
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    m.Export(sfd.FileName, resFile); //Todo i need to grab the resfile instance for later version comparing
+                }
+            }
         }
 
         public class MatTexture
@@ -1706,7 +1712,10 @@ namespace Smash_Forge
             public int wrapModeW = 1; //Used for 3D textures
             public int minFilter = 3;
             public int magFilter = 2;
-            public int mipDetail = 6;
+            public short FilterMode = 0;
+            public float LODBias = 0;
+            public int MaxAnisotropic = 7;
+
             public string Name;
             public string SamplerName;
             //Note samplers will get converted to another sampler type sometimes in the shader assign section
@@ -1716,6 +1725,9 @@ namespace Smash_Forge
 
 
             public TextureType Type;
+            public ResNSW.GFX.TexBorderType BorderColorType;
+            public ResNSW.GFX.CompareFunction CompareFunc;
+
 
             //An enum for the assumed texture type by sampler
             //Many games have a consistant type of samplers and type. _a0 for diffuse, _n0 for normal, ect
@@ -1757,7 +1769,6 @@ namespace Smash_Forge
                 t.wrapModeT = wrapModeT;
                 t.minFilter = minFilter;
                 t.magFilter = magFilter;
-                t.mipDetail = mipDetail;
                 return t;
             }
 
@@ -1789,6 +1800,9 @@ namespace Smash_Forge
             public float[] Value_float2x3 = new float[12];
             public uint Value_UInt;
             public bool Value_Bool;
+            public byte[] UnkownTypeData;
+            public uint DataSize;
+            public uint DataOffset;
 
             public override string ToString()
             {
@@ -1814,9 +1828,9 @@ namespace Smash_Forge
 
             //Data Section by "Type"
 
-            public int Value_Int;
-            public string Value_String;
-            public float Value_Float;
+            public int[] Value_Ints;
+            public string[] Value_Strings;
+            public float[] Value_Floats;
 
         }
         public class SamplerInfo

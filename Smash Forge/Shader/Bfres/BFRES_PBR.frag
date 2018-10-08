@@ -271,7 +271,7 @@ void main()
     vec3 R = reflect(I, N); // reflection
 
     // Diffuse pass
-    vec3 diffuseIblColor = texture(irradianceMap, R).rgb;
+    vec3 diffuseIblColor = texture(irradianceMap, N).rgb;
     vec3 diffuseTerm = albedo * diffuseIblColor;
     diffuseTerm *= cavity;
     diffuseTerm *= ao;
