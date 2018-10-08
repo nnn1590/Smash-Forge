@@ -71,6 +71,7 @@ namespace Smash_Forge
                 //Runtime.TargetAnimString = e.Node.Text;
 
                 string AnimName = e.Node.Text;
+
                 AnimName = Regex.Match(AnimName, @"([A-Z][0-9][0-9])(.*)").Groups[0].ToString();
                 if (AnimName.Length > 3)
                     AnimName = AnimName.Substring(3);
@@ -87,6 +88,9 @@ namespace Smash_Forge
                 {
                     NodeQueue.Enqueue(n);
                 }
+
+                SetBfresSkeletonTarget(e.Node);
+
                 while (NodeQueue.Count > 0)
                 {
                     try
@@ -265,7 +269,34 @@ namespace Smash_Forge
             }
 
         }
-
+        private void SetBfresSkeletonTarget(TreeNode Anim)
+        {
+            foreach (TreeNode node in ((ModelViewport)Parent).draw)
+            {
+                if (node is ModelContainer)
+                {
+                    ModelContainer con = (ModelContainer)node;
+                    if (con.Bfres != null)
+                    {
+                        foreach (BFRES.FMDL_Model fmdl in con.Bfres.models)
+                        {
+                            if (BfresModelHasBones(Anim, fmdl))
+                                Runtime.TargetVBN = fmdl.skeleton;
+                        }
+                    }
+                }
+            }
+        }
+        private bool BfresModelHasBones(TreeNode Anim, BFRES.FMDL_Model fmdl)
+        {
+            foreach (var b in ((Animation)Anim).Bones)
+            {
+                //Search for bones in VBN and bone anim. If it does't have one from the anim return false
+                if (!fmdl.skeleton.bones.Any(s => s.Text == b.Text))
+                    return false;
+            }
+            return true;
+        }
         private void treeView1_DoubleClick(object sender, EventArgs e)
         {
             if (treeView1.SelectedNode is Animation)
@@ -292,6 +323,7 @@ namespace Smash_Forge
 
         private void treeView1_Click(object sender, EventArgs e)
         {
+
         }
 
         private void treeView1_MouseDown(object sender, MouseEventArgs e)
