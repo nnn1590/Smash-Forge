@@ -1030,10 +1030,10 @@
     <None Include="Shader\ForgeMesh.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Shader\Melee\Dat.frag">
+    <None Include="Shader\Melee\DAT.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Shader\Melee\Dat.vert">
+    <None Include="Shader\Melee\DAT.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Shader\Melee\DatDebug.frag">
@@ -1063,19 +1063,19 @@
     <None Include="Shader\PostProcessing\Gradient.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Shader\3ds\Mbn.frag">
+    <None Include="Shader\3ds\MBN.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Shader\3ds\Mbn.vert">
+    <None Include="Shader\3ds\MBN.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Shader\Nud\Nud.frag">
+    <None Include="Shader\Nud\NUD.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Shader\Nud\Nud.geom">
+    <None Include="Shader\Nud\NUD.geom">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Shader\Nud\Nud.vert">
+    <None Include="Shader\Nud\NUD.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Shader\Nud\NudDebug.frag">
