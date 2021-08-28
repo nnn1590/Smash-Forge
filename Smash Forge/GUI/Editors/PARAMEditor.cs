@@ -434,7 +434,7 @@ namespace SmashForge
             public static List<Label> GetLabels(string paramFileName)
             {
                 List<Label> labels = new List<Label>();
-                string labelDirectory = Path.Combine(MainForm.executableDir, "param_labels\\");
+                string labelDirectory = Path.Combine(MainForm.executableDir, "param_labels/");
                 if (Directory.Exists(labelDirectory))
                 {
                     string[] files = Directory.GetFiles(labelDirectory);

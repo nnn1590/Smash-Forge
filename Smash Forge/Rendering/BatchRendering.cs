@@ -20,7 +20,7 @@ namespace SmashForge.Rendering
             MainForm.Instance.OpenBfres(MainForm.GetUncompressedSzsSbfresData(file), file, "", viewport);
 
             string nameNoExtension = Path.GetFileNameWithoutExtension(file);
-            string textureFileName = Path.GetDirectoryName(file) + "\\" + $"{nameNoExtension}.Tex1.sbfres";
+            string textureFileName = Path.GetDirectoryName(file) + "/" + $"{nameNoExtension}.Tex1.sbfres";
 
             if (File.Exists(textureFileName))
                 MainForm.Instance.OpenBfres(MainForm.GetUncompressedSzsSbfresData(textureFileName), textureFileName, "", viewport);

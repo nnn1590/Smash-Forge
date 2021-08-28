@@ -30,9 +30,9 @@ namespace SmashForge
 
         public void PopulateTreeNodes()
         {
-            if (Directory.Exists(MainForm.executableDir + "\\materials"))
+            if (Directory.Exists(MainForm.executableDir + "/materials"))
             {
-                foreach (string folder in Directory.EnumerateDirectories(Path.GetFullPath(MainForm.executableDir + "\\materials")))
+                foreach (string folder in Directory.EnumerateDirectories(Path.GetFullPath(MainForm.executableDir + "/materials")))
                 {
                     DirectoryInfo dir = new DirectoryInfo(folder);
                

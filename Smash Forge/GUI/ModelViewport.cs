@@ -1183,7 +1183,7 @@ namespace SmashForge
             using (Bitmap screenCapture = Framebuffer.ReadDefaultFramebufferImagePixels(fboRenderWidth, fboRenderHeight, true))
             {
                 string renderName = ConvertDirSeparatorsToUnderscore(fileName, sourcePath);
-                screenCapture.Save(outputPath + "\\" + renderName + ".png");
+                screenCapture.Save(outputPath + "/" + renderName + ".png");
             }
         }
 
@@ -1201,7 +1201,7 @@ namespace SmashForge
             // Save the render using the folder structure as the name.
             string renderName = fullPath.Replace(sourceDirPath, "");
             renderName = renderName.Substring(1);
-            renderName = renderName.Replace("\\", "_");
+            renderName = renderName.Replace("/", "_");
             renderName = renderName.Replace("//", "_");
             renderName = renderName.Replace(".nud", "");
             return renderName;
@@ -1938,10 +1938,10 @@ namespace SmashForge
         {
             // Keep incrementing the number until unique.
             int i = 0;
-            string outputPath = MainForm.executableDir + "\\render_" + i + ".png";
+            string outputPath = MainForm.executableDir + "/render_" + i + ".png";
             while (File.Exists(outputPath))
             {
-                outputPath = MainForm.executableDir + "\\render_" + i + ".png";
+                outputPath = MainForm.executableDir + "/render_" + i + ".png";
                 i++;
             }
 

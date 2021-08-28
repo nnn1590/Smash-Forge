@@ -362,7 +362,7 @@ namespace SmashForge
         {
             EnsureHitboxColors();
             XmlDocument doc = CreateXmlFromSettings();
-            doc.Save(MainForm.executableDir + "\\config.xml");
+            doc.Save(MainForm.executableDir + "/config.xml");
         }
 
         private static XmlDocument CreateXmlFromSettings()
@@ -580,7 +580,7 @@ namespace SmashForge
         private static void AppendDiscordSettings(XmlDocument doc, XmlNode parentNode)
         {
             XmlNode discordNode = doc.CreateElement("DISCORDSETTINGS");
-            discordNode.AppendChild(createNode(doc, "discord_enabled", DiscordSettings.enabled.ToString()));
+            discordNode.AppendChild(createNode(doc, "discord_enabled", "false"));
             discordNode.AppendChild(createNode(doc, "image_key_mode", ((int)DiscordSettings.imageKeyMode).ToString()));
             discordNode.AppendChild(createNode(doc, "user_image_key", DiscordSettings.userPickedImageKey));
             discordNode.AppendChild(createNode(doc, "use_user_mod_name", DiscordSettings.useUserModName.ToString()));

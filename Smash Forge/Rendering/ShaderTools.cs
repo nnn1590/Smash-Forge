@@ -54,31 +54,31 @@ namespace SmashForge.Rendering
         
         private static void SetUpMeleeShaders()
         {
-            CreateAndAddShader("Dat", "Melee\\Dat.vert", "Melee\\Dat.frag", "Melee\\MeleeUtils.frag");
-            CreateAndAddShader("DatDebug", "Melee\\Dat.vert", "Melee\\DatDebug.frag", "Melee\\MeleeUtils.frag");
+            CreateAndAddShader("Dat", "Melee/Dat.vert", "Melee/Dat.frag", "Melee/MeleeUtils.frag");
+            CreateAndAddShader("DatDebug", "Melee/Dat.vert", "Melee/DatDebug.frag", "Melee/MeleeUtils.frag");
         }
 
         private static void SetUpBfresShaders()
         {
             List<string> bfresSharedShaders = new List<string>
             {
-                "Bfres\\BFRES.vert",
-                "Bfres\\BFRES_utility.frag",
-                "Utility\\Utility.frag"
+                "Bfres/BFRES.vert",
+                "Bfres/BFRES_utility.frag",
+                "Utility/Utility.frag"
             };
 
             List<string> bfresDebugShaders = new List<string>(bfresSharedShaders);
-            bfresDebugShaders.Add("Bfres\\BFRES_Debug.frag");
+            bfresDebugShaders.Add("Bfres/BFRES_Debug.frag");
 
             List<string> bfresShaders = new List<string>(bfresSharedShaders);
-            bfresShaders.Add("Bfres\\BFRES.frag");
+            bfresShaders.Add("Bfres/BFRES.frag");
 
             List<string> bfresPBRShaders = new List<string>(bfresSharedShaders);
-            bfresPBRShaders.Add("Bfres\\BFRES_PBR.frag");
+            bfresPBRShaders.Add("Bfres/BFRES_PBR.frag");
 
 
             List<string> bfresBotwShaders = new List<string>(bfresSharedShaders);
-            bfresBotwShaders.Add("Bfres\\BFRES_Botw.frag");
+            bfresBotwShaders.Add("Bfres/BFRES_Botw.frag");
 
             CreateAndAddShader("BFRES", bfresShaders.ToArray());
             CreateAndAddShader("BFRES_PBR", bfresPBRShaders.ToArray());
@@ -89,47 +89,47 @@ namespace SmashForge.Rendering
 
         private static void SetUpMiscShaders()
         {
-            CreateAndAddShader("Mbn", "3ds\\Mbn.frag", "3ds\\Mbn.vert");
+            CreateAndAddShader("Mbn", "3ds/Mbn.frag", "3ds/Mbn.vert");
             CreateAndAddShader("Point", "Point.frag", "Point.vert");
             CreateAndAddShader("Shadow", "Shadow.frag", "Shadow.vert");
             CreateAndAddShader("ForgeMesh", "ForgeMesh.frag", "ForgeMesh.vert");
             CreateAndAddShader("SolidColor3D", "SolidColor3D.frag", "SolidColor3D.vert");
-            CreateAndAddShader("UV", "NUD\\UV.frag", "NUD\\UV.vert", "NUD\\UV.geom", "NUD\\EdgeDistance.geom", "Utility\\Utility.frag", "Utility\\Wireframe.frag");
+            CreateAndAddShader("UV", "NUD/UV.frag", "NUD/UV.vert", "NUD/UV.geom", "NUD/EdgeDistance.geom", "Utility/Utility.frag", "Utility/Wireframe.frag");
         }
 
         private static void SetUpNudShaders()
         {
             List<string> sharedNudShaders = new List<string>()
             {
-                "Nud\\NUD.vert",
-                "Nud\\NUD.geom",
-                "Nud\\StageLighting.frag",
-                "Nud\\Bayo.frag",
-                "Nud\\SmashShader.frag",
-                "Utility\\Wireframe.frag",
-                "Utility\\Utility.frag", "Nud\\EdgeDistance.geom"
+                "Nud/NUD.vert",
+                "Nud/NUD.geom",
+                "Nud/StageLighting.frag",
+                "Nud/Bayo.frag",
+                "Nud/SmashShader.frag",
+                "Utility/Wireframe.frag",
+                "Utility/Utility.frag", "Nud/EdgeDistance.geom"
             };
 
             // Wii U NUD Shaders.
             List<string> nudShaders = new List<string>(sharedNudShaders);
-            nudShaders.Add("Nud\\NUD.frag");
+            nudShaders.Add("Nud/NUD.frag");
 
             CreateAndAddShader("Nud", nudShaders.ToArray());
 
             List<string> nudDebugShaders = new List<string>(sharedNudShaders);
-            nudDebugShaders.Add("Nud\\NudDebug.frag");
+            nudDebugShaders.Add("Nud/NudDebug.frag");
                 
             CreateAndAddShader("NudDebug", nudDebugShaders.ToArray());
 
             // Wii U NUD Material Preview Shaders.
             string[] nudMatShaders = new string[]
             {
-                "Nud\\NudSphere.frag",
-                "Nud\\NudSphere.vert",
-                "Nud\\StageLighting.frag",
-                "Nud\\Bayo.frag",
-                "Nud\\SmashShader.frag",
-                "Utility\\Utility.frag"
+                "Nud/NudSphere.frag",
+                "Nud/NudSphere.vert",
+                "Nud/StageLighting.frag",
+                "Nud/Bayo.frag",
+                "Nud/SmashShader.frag",
+                "Utility/Utility.frag"
             };
             CreateAndAddShader("NudSphere", nudMatShaders);
         }
@@ -138,9 +138,9 @@ namespace SmashForge.Rendering
         {
             // Fullscreen "quad" shaders.
             // A single vertex shader is shared to calculate UVs for all these shaders.
-            CreateAndAddShader("Texture", "Texture.frag", "PostProcessing\\ScreenTexCoordMain.vert");
-            CreateAndAddShader("ScreenQuad", "PostProcessing\\ScreenQuad.frag", "PostProcessing\\ScreenTexCoordMain.vert");
-            CreateAndAddShader("Gradient", "PostProcessing\\Gradient.frag", "PostProcessing\\ScreenTexCoordMain.vert");
+            CreateAndAddShader("Texture", "Texture.frag", "PostProcessing/ScreenTexCoordMain.vert");
+            CreateAndAddShader("ScreenQuad", "PostProcessing/ScreenQuad.frag", "PostProcessing/ScreenTexCoordMain.vert");
+            CreateAndAddShader("Gradient", "PostProcessing/Gradient.frag", "PostProcessing/ScreenTexCoordMain.vert");
         }
         
         public static void CreateAndAddShader(string shaderProgramName, params string[] shaderRelativePaths)
@@ -226,7 +226,7 @@ namespace SmashForge.Rendering
             foreach (string file in shaderRelativePaths)
             {
                 // The input paths are relative to the main shader directory.
-                string shaderPath = shaderSourceDirectory + "\\" + file;
+                string shaderPath = shaderSourceDirectory + "/" + file;
                 if (!File.Exists(shaderPath))
                     continue;
 
@@ -273,7 +273,7 @@ namespace SmashForge.Rendering
                 }
 
                 // Create the error logs directory if not found.
-                string errorLogDirectory = MainForm.executableDir + "\\Shader Error Logs\\";
+                string errorLogDirectory = MainForm.executableDir + "/Shader Error Logs/";
                 if (!Directory.Exists(errorLogDirectory))
                     Directory.CreateDirectory(errorLogDirectory);
 

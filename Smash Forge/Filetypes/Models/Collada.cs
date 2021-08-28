@@ -988,7 +988,7 @@ namespace SmashForge
                     image.name = tex.Text;
                     image.initref = tex.Text + ".png";
 
-                    tex.ExportAsImage(tex.texture, tex.display, fname.Substring(0, fname.LastIndexOf("\\") + 1) + tex.Text + ".png");
+                    tex.ExportAsImage(tex.texture, tex.display, fname.Substring(0, fname.LastIndexOf("/") + 1) + tex.Text + ".png");
                     tid++;
                 }
             }   
@@ -1299,7 +1299,7 @@ namespace SmashForge
                 image.id = "Tex" + tid;
                 image.name = image.id;
                 image.initref = image.id + ".png";
-                dat.texturesLinker[tex].Save(fname.Substring(0, fname.LastIndexOf("\\")+1) + image.initref);
+                dat.texturesLinker[tex].Save(fname.Substring(0, fname.LastIndexOf("/")+1) + image.initref);
                 texbank.Add(dat.texturesLinker[tex], "#" + image.id);
                 tid++;
             }
@@ -1586,7 +1586,7 @@ namespace SmashForge
                 image.name = image.id;
                 image.initref = image.id + ".dds";
 
-                //dat.texturesLinker[tex].Save(fname.Substring(0, fname.LastIndexOf("\\") + 1) + image.initref);
+                //dat.texturesLinker[tex].Save(fname.Substring(0, fname.LastIndexOf("/") + 1) + image.initref);
                 if (defaultTexture == -1)
                     defaultTexture = tex;
             }*/

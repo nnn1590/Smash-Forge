@@ -291,7 +291,7 @@ namespace SmashForge
             if (Editor == null || Editor.IsDisposed)
             {
                 Editor = new NutEditor(this);
-                Editor.Text = Parent.Text + "\\" + Text;
+                Editor.Text = Parent.Text + "/" + Text;
                 //Editor.ShowDialog();
                 MainForm.Instance.AddDockedControl(Editor);
             }

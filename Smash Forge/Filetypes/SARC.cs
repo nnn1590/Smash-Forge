@@ -146,7 +146,7 @@ namespace SmashForge
             foreach (string fileName in fileEntries)
             {
                 processFile(fileName, fdata);
-                char[] sep = { '\\' };
+                char[] sep = { '/' };
                 string[] fn = fileName.Split(sep);
                 string tempf = "";
                 for (int i = 1; i < fn.Length; i++)
@@ -188,7 +188,7 @@ namespace SmashForge
                         Directory.CreateDirectory(fullDir);
                     }
                 }
-                FileStream fs = File.Create(file + "\\" + fileNames[s]);
+                FileStream fs = File.Create(file + "/" + fileNames[s]);
                 fs.Write(files[s], 0, files[s].Length);
                 fs.Close();
             }

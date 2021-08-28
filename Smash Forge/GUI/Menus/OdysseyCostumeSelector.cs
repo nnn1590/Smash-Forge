@@ -33,7 +33,7 @@ namespace SmashForge.Gui.Menus
                 }
             }
 
-            string[] dirs = Directory.GetFiles($"{Runtime.marioOdysseyGamePath}\\ObjectData", "Mario*");
+            string[] dirs = Directory.GetFiles($"{Runtime.marioOdysseyGamePath}/ObjectData", "Mario*");
 
             foreach (string dir in dirs)
             {

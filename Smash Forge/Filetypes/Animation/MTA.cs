@@ -423,7 +423,7 @@ namespace SmashForge
             {
                 Editor = new MtaEditor(this);
                 //Editor.FilePath = FilePath;
-                Editor.Text = Parent.Text + "\\" + Text;
+                Editor.Text = Parent.Text + "/" + Text;
                 MainForm.Instance.AddDockedControl(Editor);
             }
             else

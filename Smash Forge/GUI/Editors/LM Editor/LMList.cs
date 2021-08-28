@@ -175,7 +175,7 @@ namespace SmashForge
                 }
                 else if (e.Node.Text.StartsWith("Graphic 0x"))
                 {
-                    string filename = (Path.GetDirectoryName(lumen.Filename) + "\\img-" + (e.Node.Index.ToString("00000")) + ".nut");
+                    string filename = (Path.GetDirectoryName(lumen.Filename) + "/img-" + (e.Node.Index.ToString("00000")) + ".nut");
                     nut = new NUT(filename);
                     nut.RefreshGlTexturesByHashId();
                     LmuvViewer uvViewer = new LmuvViewer(lumen, nut, e.Node.Parent.Index, e.Node.Index);

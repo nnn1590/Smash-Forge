@@ -27,12 +27,12 @@ namespace SmashForge.Params
         public static Dictionary<string, MatParam> GetMatParamsFromFile()
         {
             Dictionary<string, MatParam> propList = new Dictionary<string, MatParam>();
-            if (File.Exists("param_labels\\material_params.ini"))
+            if (File.Exists("param_labels/material_params.ini"))
             {
                 try
                 {
                     MatParam matParam = new MatParam();
-                    using (StreamReader sr = new StreamReader("param_labels\\material_params.ini"))
+                    using (StreamReader sr = new StreamReader("param_labels/material_params.ini"))
                     {
                         while (!sr.EndOfStream)
                         {

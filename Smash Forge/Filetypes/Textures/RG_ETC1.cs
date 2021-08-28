@@ -191,13 +191,13 @@ namespace SmashForge
             high = 2
         }
 
-        [DllImport("lib\\RG_ETC1.dll")]
+        [DllImport("lib/RG_ETC1.dll")]
         public static extern void init();
 
-        [DllImport("lib\\RG_ETC1.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("lib/RG_ETC1.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr encode_etc1(uint[] pSrc_pixels_rgba, int quality, bool dither);
 
-        [DllImport("lib\\RG_ETC1.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("lib/RG_ETC1.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern int ReleaseMemory(IntPtr ptr);
     }
 }

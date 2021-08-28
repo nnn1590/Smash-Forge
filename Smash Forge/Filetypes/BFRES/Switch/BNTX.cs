@@ -180,7 +180,7 @@ namespace SmashForge
         private void OpenEditor(object sender, EventArgs args)
         {
             Editor = new BntxEditor(this);
-            Editor.Text = Parent.Text + "\\" + Text;
+            Editor.Text = Parent.Text + "/" + Text;
             MainForm.Instance.AddDockedControl(Editor);
         }
         public void ReadBNTXFile(string data) //For single BNTX files

@@ -1062,7 +1062,7 @@ namespace SmashForge
             using (var sfd = new SaveFileDialog())
             {
                 sfd.Filter = "Namco Material (NMT)|*.nmt";
-                sfd.InitialDirectory = Path.Combine(MainForm.executableDir, "materials\\");
+                sfd.InitialDirectory = Path.Combine(MainForm.executableDir, "materials/");
 
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {

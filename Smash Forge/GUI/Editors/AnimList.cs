@@ -316,7 +316,7 @@ namespace SmashForge
                         foreach (TreeNode a in v.Nodes)
                         {
                             if (a is Animation)
-                                OMOOld.createOMO(((Animation)a), Runtime.TargetVbn, path + "\\" + a.Text + ".omo");
+                                OMOOld.createOMO(((Animation)a), Runtime.TargetVbn, path + "/" + a.Text + ".omo");
                         }        
                     }
                 }
@@ -340,7 +340,7 @@ namespace SmashForge
                                 {
                                     if (a is Animation)
                                     {
-                                        Smd.Save(((Animation)a), Runtime.TargetVbn, path + "\\" + a.Text + ".smd");
+                                        Smd.Save(((Animation)a), Runtime.TargetVbn, path + "/" + a.Text + ".smd");
                                     }
                                 }
                             }
@@ -367,7 +367,7 @@ namespace SmashForge
                                 foreach (TreeNode a in f.Nodes)
                                 {
                                     if (a is Animation)
-                                        ANIM.CreateANIM(path + "\\" + a.Text + ".anim", ((Animation)a), Runtime.TargetVbn);
+                                        ANIM.CreateANIM(path + "/" + a.Text + ".anim", ((Animation)a), Runtime.TargetVbn);
                                 }
                             }
                         }

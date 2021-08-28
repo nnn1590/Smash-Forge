@@ -93,7 +93,7 @@ namespace System.IO
         internal wFileAssociation(string ext)
         {
             _extension = ext;
-            _regPath = "HKEY_CLASSES_ROOT\\" + _extension;
+            _regPath = "HKEY_CLASSES_ROOT/" + _extension;
         }
 
         public override void Delete()
@@ -111,35 +111,35 @@ namespace System.IO
 
         public override string Icon
         {
-            get { return Registry.GetValue(_regPath + "\\DefaultIcon", "", null) as string; }
+            get { return Registry.GetValue(_regPath + "/DefaultIcon", "", null) as string; }
             set
             {
                 if (string.IsNullOrEmpty(value))
-                    try { Registry.ClassesRoot.DeleteSubKeyTree(_name + "\\DefaultIcon"); }
+                    try { Registry.ClassesRoot.DeleteSubKeyTree(_name + "/DefaultIcon"); }
                     catch (Exception) { }
                 else
-                    Registry.SetValue(_regPath + "\\DefaultIcon", "", value);
+                    Registry.SetValue(_regPath + "/DefaultIcon", "", value);
             }
         }
 
         internal wFileType(string name)
         {
             _name = name;
-            _regPath = String.Format("HKEY_CLASSES_ROOT\\{0}", _name);
+            _regPath = String.Format("HKEY_CLASSES_ROOT/{0}", _name);
         }
 
         public override string GetCommand(string verb)
         {
-            return Registry.GetValue(String.Format("{0}\\shell\\{1}\\command", _regPath, verb), "", null) as string;
+            return Registry.GetValue(String.Format("{0}/shell/{1}/command", _regPath, verb), "", null) as string;
         }
 
         public override void SetCommand(string verb, string command)
         {
             if (String.IsNullOrEmpty(command))
-                try { Registry.ClassesRoot.DeleteSubKeyTree(String.Format("{0}\\shell\\{1}", _regPath, verb)); }
+                try { Registry.ClassesRoot.DeleteSubKeyTree(String.Format("{0}/shell/{1}", _regPath, verb)); }
                 catch (Exception) { }
             else
-                Registry.SetValue(String.Format("{0}\\shell\\{1}\\command", _regPath, verb), "", command);
+                Registry.SetValue(String.Format("{0}/shell/{1}/command", _regPath, verb), "", command);
         }
 
         public override void Delete() { try { Registry.ClassesRoot.DeleteSubKeyTree(_name); } catch (Exception) { } }

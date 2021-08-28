@@ -184,7 +184,7 @@ namespace SmashForge
 
         /*public void readStageAnim()
         {
-            FileData d = new FileData("C:\\Users\\ploaj_000\\Desktop\\Melee\\GrIz.dat");
+            FileData d = new FileData("C:/Users/ploaj_000/Desktop/Melee/GrIz.dat");
             d.Endian = System.IO.Endianness.Big;
             Debug = true;
             readKeyFrame(d, 8, 0x107300, 0x04, 0x00, 0x08, 0, 0x06);

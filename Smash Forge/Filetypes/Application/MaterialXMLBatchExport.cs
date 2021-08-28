@@ -52,7 +52,7 @@ namespace SmashForge.Filetypes
         {
             string xmlName = ModelViewport.ConvertDirSeparatorsToUnderscore(file, sourceDir);
             Nud nud = new Nud(file);
-            string outputFileName = $"{ outputDir }\\{ xmlName }.xml";
+            string outputFileName = $"{ outputDir }/{ xmlName }.xml";
             MaterialXML.ExportMaterialAsXml(nud, outputFileName);
         }
 
@@ -66,7 +66,7 @@ namespace SmashForge.Filetypes
             var doc = DatMaterialXml.CreateMaterialXml(rootNode);
 
             string xmlName = Path.GetFileNameWithoutExtension(file);
-            string outputFileName = $"{ outputDir }\\{ xmlName }.xml";
+            string outputFileName = $"{ outputDir }/{ xmlName }.xml";
 
             doc.Save(outputFileName);
         }

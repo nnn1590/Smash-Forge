@@ -68,7 +68,7 @@ namespace SmashForge
 
         public void Save(String fname)
         {
-            string path = Path.GetDirectoryName(fname) + "\\";
+            string path = Path.GetDirectoryName(fname) + "/";
             MotionTable.Export(fname);
             Game.Export(path + "game.bin");
             Effect.Export(path + "effect.bin");

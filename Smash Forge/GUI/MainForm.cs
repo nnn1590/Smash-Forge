@@ -70,7 +70,6 @@ namespace SmashForge
         {
             if (SmashForge.Update.Downloaded && Instance.greenArrowPictureBox.Image == null)
                 Instance.greenArrowPictureBox.Image = Resources.Resources.sexy_green_down_arrow;
-            DiscordSettings.Update();
         }
 
         ~MainForm()
@@ -78,41 +77,6 @@ namespace SmashForge
             Application.Idle -= AppIdle;
         }
 
-        private void MainForm_Load(object sender, EventArgs e)
-        {
-            Config.StartupFromFile(executableDir + "\\config.xml");
-            DiscordSettings.startTime = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
-            dockPanel = dockPanel1;
-            DiscordSettings.discordController = new DiscordController();
-            DiscordSettings.discordController.Initialize();
-            DiscordSettings.Update();
-
-            ThreadStart t = new ThreadStart(SmashForge.Update.CheckLatest);
-            Thread thread = new Thread(t);
-            thread.Start();
-
-            if (File.Exists(Path.Combine(executableDir, "version.txt")))
-                Text = "Smash Forge | Build: " + File.ReadAllText(Path.Combine(executableDir, "version.txt"));
-
-            Application.Idle += AppIdle;
-
-            AllViewsPreset(new Object(), new EventArgs());
-
-            hashes = new csvHashes(Path.Combine(executableDir, "hashTable.csv"));
-
-            DiscordSettings.Update();
-
-            // Make sure everything is loaded before opening files.
-            OpenTkSharedResources.InitializeSharedResources();
-            if (OpenTkSharedResources.SetupStatus == OpenTkSharedResources.SharedResourceStatus.Failed)
-            {
-                // Disable options that would cause crashes.
-                reloadShadersToolStripMenuItem.Enabled = false;
-                exportErrorLogToolStripMenuItem.Enabled = false;
-            }
-
-            OpenFiles();
-        }
 
         public void OpenFiles()
         {
@@ -199,9 +163,39 @@ namespace SmashForge
             filesToOpen = null;
         }
 
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            Config.StartupFromFile(executableDir + "/config.xml");
+            dockPanel = dockPanel1;
+
+            ThreadStart t = new ThreadStart(SmashForge.Update.CheckLatest);
+            Thread thread = new Thread(t);
+            thread.Start();
+
+            if (File.Exists(Path.Combine(executableDir, "version.txt")))
+                Text = "Smash Forge | Build: " + File.ReadAllText(Path.Combine(executableDir, "version.txt"));
+
+            Application.Idle += AppIdle;
+
+            AllViewsPreset(new Object(), new EventArgs());
+
+            hashes = new csvHashes(Path.Combine(executableDir, "hashTable.csv"));
+
+
+            // Make sure everything is loaded before opening files.
+            OpenTkSharedResources.InitializeSharedResources();
+            if (OpenTkSharedResources.SetupStatus == OpenTkSharedResources.SharedResourceStatus.Failed)
+            {
+                // Disable options that would cause crashes.
+                reloadShadersToolStripMenuItem.Enabled = false;
+                exportErrorLogToolStripMenuItem.Enabled = false;
+            }
+
+            //OpenFiles();
+        }
         private void MainForm_Close(object sender, EventArgs e)
         {
-            DiscordRpc.Shutdown();
         }
 
         public void AddDockedControl(DockContent content)
@@ -439,7 +433,7 @@ namespace SmashForge
             //modelContainer.MeleeData = new MeleeDataNode(fileName);
 
             MeleeDataNode n = new MeleeDataNode(fileName) { Text = Path.GetFileName(fileName) };
-            if (Regex.Match(Path.GetFileName(fileName), "Pl[A-Z][a-z]\\.dat").Success)
+            if (Regex.Match(Path.GetFileName(fileName), "Pl[A-Z][a-z]/.dat").Success)
             {
                 string animationfileName = fileName.Replace(".dat", "AJ.dat");
                 n.LoadPlayerAJ(animationfileName);
@@ -755,11 +749,11 @@ namespace SmashForge
                             Instance.progress.Message = "Please Wait... Opening Character Model";
                             Instance.progress.Refresh();
                             // load default model
-                            mvp = OpenNud(s + "\\body\\c00\\model.nud", "", mvp);
+                            mvp = OpenNud(s + "/body/c00/model.nud", "", mvp);
 
                             Instance.progress.ProgressValue = 25;
                             Instance.progress.Message = "Please Wait... Opening Character Expressions";
-                            string[] anims = Directory.GetFiles(s + "\\body\\c00\\");
+                            string[] anims = Directory.GetFiles(s + "/body/c00/");
                             float a = 0;
                             foreach (string ss in anims)
                             {
@@ -775,7 +769,7 @@ namespace SmashForge
                         {
                             Instance.progress.ProgressValue = 50;
                             Instance.progress.Message = "Please Wait... Opening Character Animation";
-                            string[] anims = Directory.GetFiles(s + "\\body\\");
+                            string[] anims = Directory.GetFiles(s + "/body/");
                             //Sort files so main.pac is opened first
                             Array.Sort(anims, (a, b) =>
                             {
@@ -794,13 +788,13 @@ namespace SmashForge
                         {
                             Instance.progress.ProgressValue = 75;
                             Instance.progress.Message = ("Please Wait... Opening Character Scripts");
-                            if (File.Exists(s + "\\animcmd\\body\\motion.mtable"))
+                            if (File.Exists(s + "/animcmd/body/motion.mtable"))
                             {
-                                mvp.MovesetManager = new MovesetManager(s + "\\animcmd\\body\\motion.mtable");
+                                mvp.MovesetManager = new MovesetManager(s + "/animcmd/body/motion.mtable");
                             }
 
-                            if (Runtime.loadAndRenderAtkd && File.Exists(s + "\\ai\\attack_data.bin"))
-                                Runtime.currentAtkd = s + "\\ai\\attack_data.bin";
+                            if (Runtime.loadAndRenderAtkd && File.Exists(s + "/ai/attack_data.bin"))
+                                Runtime.currentAtkd = s + "/ai/attack_data.bin";
                         }
                     }
 
@@ -813,13 +807,13 @@ namespace SmashForge
                         // If they set the wrong dir, oh well
                         try
                         {
-                            mvp.paramManager = new CharacterParamManager(Runtime.paramDir + $"\\fighter\\fighter_param_vl_{fighterName}.bin", fighterName);
+                            mvp.paramManager = new CharacterParamManager(Runtime.paramDir + $"/fighter/fighter_param_vl_{fighterName}.bin", fighterName);
                             mvp.hurtboxList.Refresh();
-                            mvp.paramManagerHelper = new ParamEditor(Runtime.paramDir + $"\\fighter\\fighter_param_vl_{fighterName}.bin");
+                            mvp.paramManagerHelper = new ParamEditor(Runtime.paramDir + $"/fighter/fighter_param_vl_{fighterName}.bin");
                             mvp.paramMoveNameIdMapping = mvp.paramManagerHelper.GetMoveNameIdMapping();
 
                             // Model render size
-                            ParamFile param = new ParamFile(Runtime.paramDir + "\\fighter\\fighter_param.bin");
+                            ParamFile param = new ParamFile(Runtime.paramDir + "/fighter/fighter_param.bin");
                             ParamEntry[] characterParams = ((ParamGroup)param.Groups[0])[CharacterParamManager.fighterId[fighterName]];
                             int modelScaleIndex = 44;
                             Runtime.modelScale = Convert.ToSingle(characterParams[modelScaleIndex].Value);
@@ -847,11 +841,11 @@ namespace SmashForge
                 ofd.Title = "Export ACMD Folder";
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    Runtime.Moveset.MotionTable.Export(ofd.SelectedPath + "\\motion.mtable");
-                    Runtime.Moveset.Game.Export(ofd.SelectedPath + "\\game.bin");
-                    Runtime.Moveset.Sound.Export(ofd.SelectedPath + "\\sound.bin");
-                    Runtime.Moveset.Expression.Export(ofd.SelectedPath + "\\expression.bin");
-                    Runtime.Moveset.Effect.Export(ofd.SelectedPath + "\\effect.bin");
+                    Runtime.Moveset.MotionTable.Export(ofd.SelectedPath + "/motion.mtable");
+                    Runtime.Moveset.Game.Export(ofd.SelectedPath + "/game.bin");
+                    Runtime.Moveset.Sound.Export(ofd.SelectedPath + "/sound.bin");
+                    Runtime.Moveset.Expression.Export(ofd.SelectedPath + "/expression.bin");
+                    Runtime.Moveset.Effect.Export(ofd.SelectedPath + "/effect.bin");
                 }
             }
         }
@@ -880,10 +874,10 @@ namespace SmashForge
             };
             Instance.progress.Show();
 
-            string modelPath = stagePath + "\\model\\";
-            string paramPath = stagePath + "\\param\\";
-            string animationPath = stagePath + "\\animation\\";
-            string renderPath = stagePath + "\\render\\";
+            string modelPath = stagePath + "/model/";
+            string paramPath = stagePath + "/param/";
+            string animationPath = stagePath + "/animation/";
+            string renderPath = stagePath + "/render/";
 
             if (mvp == null)
             {
@@ -1091,7 +1085,6 @@ namespace SmashForge
         /// <param name="fileName"> Filename of file to open</param>
         public void OpenFile(string fileName)
         {
-            DiscordSettings.lastFileOpened = Path.GetFileName(fileName);
 
             // Reassigned if a valid model file is opened. 
             ModelViewport mvp = new ModelViewport();
@@ -1977,7 +1970,7 @@ namespace SmashForge
                     ModelViewport mvp = new ModelViewport();
                     mvp.Text = fighterName;
 
-                    String modelFolder = ofd.SelectedPath + "\\body\\h00\\";
+                    String modelFolder = ofd.SelectedPath + "/body/h00/";
                     Console.WriteLine(modelFolder);
                     if (Directory.Exists(modelFolder))
                     {
@@ -1990,14 +1983,14 @@ namespace SmashForge
                             modelContainer.Bch = bch;
                         }
 
-                        if (File.Exists(ofd.SelectedPath + "\\body\\c00\\" + "model.jtb"))
+                        if (File.Exists(ofd.SelectedPath + "/body/c00/" + "model.jtb"))
                         {
-                            modelContainer.JTB = new JTB(ofd.SelectedPath + "\\body\\c00\\" + "model.jtb");
+                            modelContainer.JTB = new JTB(ofd.SelectedPath + "/body/c00/" + "model.jtb");
                         }
                         mvp.draw.Add(modelContainer);
                     }
 
-                    String animationFolder = ofd.SelectedPath.Replace("model", "motion") + "\\body\\";
+                    String animationFolder = ofd.SelectedPath.Replace("model", "motion") + "/body/";
                     if (Directory.Exists(animationFolder))
                     {
                         string[] anims = Directory.GetFiles(modelFolder);
@@ -2009,7 +2002,7 @@ namespace SmashForge
 
                     }
 
-                    String acmdFolder = ofd.SelectedPath.Replace("model", "animcmd") + "\\";
+                    String acmdFolder = ofd.SelectedPath.Replace("model", "animcmd") + "/";
                     if (Directory.Exists(acmdFolder))
                     {
                         mvp.MovesetManager = new MovesetManager(acmdFolder + "motion.mtable");
@@ -2223,19 +2216,19 @@ namespace SmashForge
                         string parent = Directory.GetParent(path).FullName;
 
                         if (path.Contains($"{fileName}Face"))
-                            LoadCostume($"{parent}\\MarioFace.szs", mvp);
+                            LoadCostume($"{parent}/MarioFace.szs", mvp);
                         else if (path.Contains($"{fileName}Eye"))
-                            LoadCostume($"{parent}\\MarioEye.szs", mvp);
+                            LoadCostume($"{parent}/MarioEye.szs", mvp);
                         else if (path.Contains($"{fileName}HeadTexture"))
-                            LoadCostume($"{parent}\\MarioHeadTexture.szs", mvp);
+                            LoadCostume($"{parent}/MarioHeadTexture.szs", mvp);
                         else if (path.Contains($"{fileName}Head"))
-                            LoadCostume($"{parent}\\MarioHead.szs", mvp);
+                            LoadCostume($"{parent}/MarioHead.szs", mvp);
                         else if (path.Contains($"{fileName}HandL"))
-                            LoadCostume($"{parent}\\MarioHandL.szs", mvp);
+                            LoadCostume($"{parent}/MarioHandL.szs", mvp);
                         else if (path.Contains($"{fileName}HandR"))
-                            LoadCostume($"{parent}\\MarioHandR.szs", mvp);
+                            LoadCostume($"{parent}/MarioHandR.szs", mvp);
                         else if (path.Contains($"{fileName}HandTexture"))
-                            LoadCostume($"{parent}\\MarioHandTexture.szs", mvp);
+                            LoadCostume($"{parent}/MarioHandTexture.szs", mvp);
 
                     }
                 }

@@ -31,6 +31,7 @@ namespace SmashForge
 
         public static void CheckLatest()
         {
+        return;
             try
             {
                 var client = new GitHubClient(new ProductHeaderValue("forge-updater"));
@@ -70,6 +71,7 @@ namespace SmashForge
 
         static void DownloadRelease()
         {
+        return;
             ProcessStartInfo p = new ProcessStartInfo();
             p.WindowStyle = ProcessWindowStyle.Hidden;
             p.CreateNoWindow = true;
@@ -88,7 +90,7 @@ namespace SmashForge
             if (process.ExitCode != 0)
                 throw new TimeoutException();
             Console.WriteLine("Finished downloading");
-            string updateExe = Path.Combine(MainForm.executableDir, "updater\\currentRelease\\Smash Forge.exe"),
+            string updateExe = Path.Combine(MainForm.executableDir, "updater/currentRelease/Smash Forge.exe"),
                   currentExe = System.Reflection.Assembly.GetEntryAssembly().Location;
             if (!Md5File(currentExe).SequenceEqual(Md5File(updateExe)))
                 Downloaded = true;

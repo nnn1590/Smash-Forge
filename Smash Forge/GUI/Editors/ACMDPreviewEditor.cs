@@ -169,9 +169,9 @@ namespace SmashForge
             rtb.SelectAll();
             rtb.SelectionBackColor = rtb.BackColor;
             rtb.SelectionColor = rtb.ForeColor;
-            HighlightRegex(richTextBox1, "\\w+\\(", Color.Blue, 1);
-            HighlightRegex(richTextBox1, "\\w+=", Color.Teal, 1);
-            HighlightRegex(richTextBox1, "0x\\w+", Color.Green, 0);
+            HighlightRegex(richTextBox1, "/w+/(", Color.Blue, 1);
+            HighlightRegex(richTextBox1, "/w+=", Color.Teal, 1);
+            HighlightRegex(richTextBox1, "0x/w+", Color.Green, 0);
 
             // check parathesis?
         }

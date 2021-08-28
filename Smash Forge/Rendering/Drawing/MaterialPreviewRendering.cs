@@ -59,7 +59,7 @@ namespace SmashForge.Rendering
 
                 CreateNudSphereShader();
 
-                foreach (string file in Directory.EnumerateFiles(MainForm.executableDir + "\\materials", "*.nmt", SearchOption.AllDirectories))
+                foreach (string file in Directory.EnumerateFiles(MainForm.executableDir + "/materials", "*.nmt", SearchOption.AllDirectories))
                 {
                     Nud.Material material = NudMaterialEditor.ReadMaterialListFromPreset(file)[0];
                     string presetName = Path.GetFileNameWithoutExtension(file);
@@ -74,12 +74,12 @@ namespace SmashForge.Rendering
             // Don't add this to the main shaders to begin with.
             string[] nudMatShaders = new string[]
             {
-                    "Nud\\NudSphere.frag",
-                    "Nud\\NudSphere.vert",
-                    "Nud\\StageLighting.frag",
-                    "Nud\\Bayo.frag",
-                    "Nud\\SmashShader.frag",
-                    "Utility\\Utility.frag"
+                    "Nud/NudSphere.frag",
+                    "Nud/NudSphere.vert",
+                    "Nud/StageLighting.frag",
+                    "Nud/Bayo.frag",
+                    "Nud/SmashShader.frag",
+                    "Utility/Utility.frag"
             };
             OpenTkSharedResources.shaders.Remove("NudSphere");
             ShaderTools.CreateAndAddShader("NudSphere", nudMatShaders);
@@ -99,7 +99,7 @@ namespace SmashForge.Rendering
             // Save output.
             using (Bitmap image = framebuffer.ReadImagePixels(true))
             {
-                string outputPath =  String.Format("{0}\\Preview Images\\{1}.png", MainForm.executableDir, presetName);
+                string outputPath =  String.Format("{0}/Preview Images/{1}.png", MainForm.executableDir, presetName);
                 image.Save(outputPath);
             }
         }

@@ -14,7 +14,7 @@ namespace SmashForge
         public static Nud Create(VBN vbn)
         {
             Dictionary<string, string> files = new Dictionary<string, string>();
-            ZipArchive zip = ZipFile.OpenRead("lib\\Skapon.zip");
+            ZipArchive zip = ZipFile.OpenRead("lib/Skapon.zip");
 
             Random random = new Random();
             int randomNumber = random.Next(0, 0xFFFFFF);
@@ -212,10 +212,10 @@ namespace SmashForge
             "ThrowN"
         };
 
-        public static void MakePichu(string path = "C:\\Pichu\\")
+        public static void MakePichu(string path = "C:/Pichu/")
         {
-            if (!path.EndsWith("\\"))
-                path += "\\";
+            if (!path.EndsWith("/"))
+                path += "/";
             DAT dat = new DAT();
             dat.Read(new FileData(path + "PlPcNr.dat"));
             dat.PreRender();
@@ -252,10 +252,10 @@ namespace SmashForge
             }
             effectiveScale(converted.NUD, converted.VBN, Matrix4.CreateTranslation(0, 0, 0) * Matrix4.CreateScale(sca, sca, sca));
 
-            Directory.CreateDirectory(path + "build\\model\\body\\c00\\");
-            nud.Save(path + "build\\model\\body\\c00\\model.nud");
+            Directory.CreateDirectory(path + "build/model/body/c00/");
+            nud.Save(path + "build/model/body/c00/model.nud");
             converted.VBN.Endian = Endianness.Little;
-            converted.VBN.Save(path + "build\\model\\body\\c00\\model.vbn");
+            converted.VBN.Save(path + "build/model/body/c00/model.vbn");
 
 
             PAC org = new PAC();
@@ -284,8 +284,8 @@ namespace SmashForge
 
                 npac.Files.Add(key, d);
             }
-            Directory.CreateDirectory(path + "build\\motion\\");
-            npac.Save(path + "build\\motion\\main.pac");
+            Directory.CreateDirectory(path + "build/motion/");
+            npac.Save(path + "build/motion/main.pac");
 
             /*FileOutput omo = new FileOutput();
             converted.vbn.reset();

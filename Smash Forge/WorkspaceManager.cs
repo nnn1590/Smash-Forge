@@ -354,7 +354,7 @@ namespace SmashForge
         {
             get
             {
-                return RelativePath.EndsWith("/") || RelativePath.EndsWith("\\");
+                return RelativePath.EndsWith("/") || RelativePath.EndsWith("/");
             }
         }
         public List<ProjectItem> Depends { get; set; }

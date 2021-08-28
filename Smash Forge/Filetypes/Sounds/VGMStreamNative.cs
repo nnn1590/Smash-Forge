@@ -181,7 +181,7 @@ namespace SmashForge
 
         #region P/Invoke Methods
 
-        private const string DllName = "lib\\libvgmstream.dll";
+        private const string DllName = "lib/libvgmstream.dll";
 
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr init_vgmstream(string filename);

@@ -105,7 +105,7 @@ namespace SmashForge.Params
 
                                 // Hardcoding this because all lightsets are structured the same way.
                                 // Use basic csv formatting to open in excel, sheets, etc. 
-                                string[] directories = file.Split('\\');
+                                string[] directories = file.Split('/');
                                 string stageName = directories[directories.Length - 3]; // get stage folder name
 
                                 AppendMiscValues(miscCsv, stageName, lightSet);
@@ -160,7 +160,7 @@ namespace SmashForge.Params
                                     }
 
                                     string fileName = outputFolderSelect.SelectedPath;
-                                    File.AppendAllText(fileName + "\\" + paramName + " Group" + i + " Values.csv", groupValues.ToString() + "\n");
+                                    File.AppendAllText(fileName + "/" + paramName + " Group" + i + " Values.csv", groupValues.ToString() + "\n");
                                 }
                             }
                         }
@@ -173,10 +173,10 @@ namespace SmashForge.Params
         private static void SaveLightSetValues(FolderSelectDialog outputFolderSelect, StringBuilder miscCsv, StringBuilder lightSetCsv, StringBuilder fogCsv, StringBuilder unkCsv)
         {
             string fileName = outputFolderSelect.SelectedPath;
-            File.WriteAllText(fileName + "\\misc values.csv", miscCsv.ToString());
-            File.WriteAllText(fileName + "\\light_set values.csv", lightSetCsv.ToString());
-            File.WriteAllText(fileName + "\\fog_set values.csv", fogCsv.ToString());
-            File.WriteAllText(fileName + "\\unk values.csv", unkCsv.ToString());
+            File.WriteAllText(fileName + "/misc values.csv", miscCsv.ToString());
+            File.WriteAllText(fileName + "/light_set values.csv", lightSetCsv.ToString());
+            File.WriteAllText(fileName + "/fog_set values.csv", fogCsv.ToString());
+            File.WriteAllText(fileName + "/unk values.csv", unkCsv.ToString());
         }
 
         private static void AppendUnknownValues(StringBuilder unkCsv, string stageName, SALT.PARAMS.ParamFile lightSet)

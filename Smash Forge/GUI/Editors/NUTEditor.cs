@@ -383,7 +383,7 @@ namespace SmashForge
                     foreach (NutTexture texture in currentNut.Nodes)
                     {
                         string texId = texture.HashId.ToString("X");
-                        RenderTextureToPng(texture, f.SelectedPath + "\\" + texId + ".png", true, true, true, true);
+                        RenderTextureToPng(texture, f.SelectedPath + "/" + texId + ".png", true, true, true, true);
                     }
                 }
             }
@@ -401,8 +401,8 @@ namespace SmashForge
                     foreach (NutTexture texture in currentNut.Nodes)
                     {
                         string texId = texture.HashId.ToString("X");
-                        RenderTextureToPng(texture, f.SelectedPath + "\\" + texId + "_rgb.png");
-                        RenderTextureToPng(texture, f.SelectedPath + "\\" + texId + "_alpha.png", false, false, false, true);
+                        RenderTextureToPng(texture, f.SelectedPath + "/" + texId + "_rgb.png");
+                        RenderTextureToPng(texture, f.SelectedPath + "/" + texId + "_alpha.png", false, false, false, true);
                     }
                 }
             }
